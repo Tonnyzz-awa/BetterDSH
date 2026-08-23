@@ -1,0 +1,84 @@
+# The `minimal` agent preset: a fixed-prompt, two-tool coding-agent composition.
+#
+# The persona is the complete system prompt, so global identity, Web orientation,
+# tool guidance, and later assembly listeners cannot add prompt text. Runtime
+# context snapshots are suppressed for this preset, and the model composes only
+# a shell tool and `str_replace_editor`. Context compaction is absent.
+#
+# The shell is platform-split. On POSIX the persistent `bash` PTY stack below
+# mounts; on win32 it is gated off (its `dsh-terminal-bash` backend spawns
+# `/bin/bash` and its readiness protocol is bash-specific, neither of which
+# exists on Windows) and the one-shot `tool-pwsh` row mounts instead, consuming
+# the host `pwsh-sandbox` executor exactly like the standard preset. The win32
+# shell therefore trades persistent shell state for a working one-shot pwsh.
+
+- id: persona
+  name: '@deepseek-ai/dsh-persona'
+  config:
+    text: You are a helpful software engineer assistant.
+    complete: true
+    includeRuntimeContext: false
+
+# The PTY registry is an agent-owned service, so it lives in an entry-local
+# realm. The backend still consumes the host sandbox policy and subprocess
+# implementation, while the tool registers into this agent's scoped catalog.
+# The whole stack is win32-disabled: its bash PTY backend has no Windows
+# counterpart, so win32 sessions get `tool-pwsh` below instead.
+- id: persistent-shell
+  name: cordis:group
+  group: true
+  disabled: !!js process.platform === 'win32'
+  isolate:
+    terminals: true
+  config:
+    - id: pty
+      name: '@deepseek-ai/dsh-terminal'
+
+    - id: terminal-bash
+      name: '@deepseek-ai/dsh-terminal-bash'
+      config:
+        timeoutMs: 300000
+
+    - id: persistent-bash
+      name: '@deepseek-ai/dsh-tool-bash-persistent'
+      config:
+        timeoutMs: 300000
+        description: |-
+          Run commands in a bash shell
+          * When invoking this tool, the contents of the "command" parameter does NOT need to be XML-escaped.
+          * You don't have access to the internet via this tool.
+          * You do have access to a mirror of common linux and python packages via apt and pip.
+          * State is persistent across command calls and discussions with the user.
+          * To inspect a particular line range of a file, e.g. lines 10-25, try 'sed -n 10,25p /path/to/the/file'.
+          * Please avoid commands that may produce a very large amount of output.
+          * Please run long lived commands in the background, e.g. 'sleep 10 &' or start a server in the background.
+
+# The win32 shell: a one-shot pwsh tool consuming the host `pwsh-sandbox`
+# executor (`ctx.shell`), sandbox policy, and shell-env — all host-plane, so
+# this row provides nothing and needs no realm, exactly like the standard
+# preset. It replaces the PTY stack above on Windows only.
+- id: tool-pwsh
+  name: '@deepseek-ai/dsh-tool-pwsh'
+  disabled: !!js process.platform !== 'win32'
+  config:
+    # No `tool-jobs` row here, so the model has no job_output/job_kill controls;
+    # a background affordance it cannot collect would be a dead end.
+    enableRunInBackground: false
+
+# The bare local filesystem shadows the host's sandboxed provider only for this
+# preset. The editor shares that realm and requires absolute paths.
+- id: filesystem
+  name: cordis:group
+  group: true
+  isolate:
+    fs: true
+  config:
+    - id: fs-local
+      name: '@deepseek-ai/dsh-fs-local'
+      config:
+        cwd: !!js process.env.DSH_CWD ?? process.cwd()
+
+    - id: str-replace-editor
+      name: '@deepseek-ai/dsh-tool-str-replace-editor'
+      config:
+        maxOutputChars: 16000

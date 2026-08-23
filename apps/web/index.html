@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>DeepSeek Harness</title>
+    <script src="/skin-switch.js"></script>
+    <style>
+      #dsh-skin-switch-inline {
+        padding: 5px 10px; border-radius: 8px;
+        border: 1px solid var(--dsw-alias-border-primary, #d4d4d8);
+        background: var(--dsw-alias-bg-layer-2, #ffffff);
+        color: var(--dsw-alias-label-primary, #52525b);
+        font-size: 12px; font-weight: 500; cursor: pointer;
+        transition: background .15s, color .15s;
+        white-space: nowrap;
+        flex: none;
+      }
+      #dsh-skin-switch-inline:hover {
+        background: var(--dsw-alias-interactive-bg-hover, #f4f4f5);
+        color: var(--dsw-alias-label-primary, #18181b);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      function injectSkinSwitch() {
+        var panel = document.querySelector('[role="dialog"][aria-modal="true"]');
+        if (!panel) return;
+        var head = panel.querySelector('[class*="header"]');
+        if (!head || head.querySelector("#dsh-skin-switch-inline")) return;
+        var b = document.createElement("button");
+        b.id = "dsh-skin-switch-inline";
+        b.textContent = "BetterDSH";
+        b.onclick = function () { try { localStorage.setItem("dsh.skin", "betterdsh"); } catch (e) {} location.reload(); };
+        head.appendChild(b);
+      }
+      var ticking = false;
+      document.addEventListener("click", function () {
+        if (ticking) return;
+        ticking = true;
+        setTimeout(function () { injectSkinSwitch(); ticking = false; }, 100);
+      }, true);
+      window.addEventListener("load", function () { setTimeout(injectSkinSwitch, 3000); });
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

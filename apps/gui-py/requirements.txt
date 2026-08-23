@@ -1,0 +1,2 @@
+# dsh-gui — 仅需要 Qt 绑定。其余全部用 Python 标准库。
+PyQt6>=6.5

@@ -1,0 +1,73 @@
+/* Boot page styles are self-contained: the theme base stylesheets are linked
+   by the shell, but the loading page must render acceptably even before/without
+   them, so this file uses tokens with neutral fallbacks (the one sanctioned
+   fallback site — plugin packages must not do this). */
+
+.boot {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at top, color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 88%, transparent), transparent 54%),
+    var(--dsw-alias-bg-base, #f8f9fb);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 28px 32px;
+  border: 1px solid color-mix(in srgb, var(--dsw-alias-border-l1, #d7dbe1) 72%, transparent);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 96%, transparent);
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--dsw-alias-bg-mask-2, #000) 10%, transparent);
+}
+
+.wordmark {
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--dsw-alias-label-primary, #0f1115);
+}
+
+.hint {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-tertiary, #737b87);
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--dsw-alias-border-l2, #c8ced6) 88%, transparent);
+  border-top-color: var(--dsw-alias-label-primary, #0f1115);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.failed {
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.failedTitle {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary, #0f1115);
+}
+
+.failedItem {
+  font-family: var(--ds-font-family-code, ui-monospace, 'SF Mono', Menlo, Consolas, 'Courier New');
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-secondary, #61666b);
+}
