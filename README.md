@@ -1,4 +1,4 @@
-# BetterDSH
+# BetterDSH (Better Deepseek Harness)
 
 English | [中文](README.zh.md)
 
