@@ -1,6 +1,6 @@
 # 贡献指南
 
-[English](CONTRIBUTING.md) | [中文](CONTRIBUTING.zh.md)
+[English](CONTRIBUTING.md) | 中文
 
 感谢你对 BetterDSH 的关注与贡献！
 
