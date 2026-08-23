@@ -1,7 +1,17 @@
 # BetterDSH
-Improved Deepseek Harness with bug fixes and new HTML &amp; Python GUIs. A more stable, user-friendly experience.
+[English](README.md) | [中文](README.zh.md)
+An improved [Deepseek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH) with bug fixes and new HTML & Python GUIs. BetterDSH makes Deepseek Harness (DSH) more stable and user-friendly — a better Deepseek Harness (DSH) for everyday use.
 
-
+## 🚀 Quick Start
+### Prerequisites
+Same as DSH — [Node.js](https://nodejs.org) 22+ and [pnpm](https://pnpm.io).
+### Installation
+```bash
+git clone https://github.com/Tonnyzz-awa/BetterDSH.git
+cd BetterDSH
+pnpm install
+pnpm run build
+```
 
 ## 👥 Contributors
 - Tonnyzz-awa(https://github.com/Tonnyzz-awa)
