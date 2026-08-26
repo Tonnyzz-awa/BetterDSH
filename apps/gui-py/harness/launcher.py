@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import subprocess
@@ -83,19 +84,72 @@ def probe_prereqs(repo: Path) -> list[dict]:
 
 
 def ensure_deps(repo: Path, *, echo=print, timeout=None) -> None:
-    """在仓库根执行 corepack pnpm install（若 node_modules 缺失）。"""
+    """在仓库根安装依赖（若 node_modules 缺失）。
+
+    跨平台：优先 pnpm，其次 corepack 托管，再次 npx。Windows 上 pnpm/corepack
+    多为 .cmd 包装，必须经 cmd.exe 解析（shell=True），直接当可执行会 OSError。
+    """
     nm = repo / "node_modules"
     if nm.is_dir():
         echo("依赖已就绪")
         return
-    echo("未安装依赖，开始 corepack pnpm install …")
-    cp = subprocess.run(
-        ["corepack", "pnpm", "install"],
-        cwd=repo,
-        timeout=timeout,
-    )
-    if cp.returncode != 0:
-        raise HarnessUnavailable("pnpm install 失败，请查看上方输出")
+    echo("未安装依赖，开始安装 …")
+    candidates = ["pnpm install", "corepack pnpm install", "npx -y pnpm install"]
+    last_err: BaseException | None = None
+    for cmd in candidates:
+        try:
+            subprocess.run(
+                cmd,
+                cwd=repo,
+                shell=True,
+                timeout=timeout,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                encoding="utf-8",
+                errors="replace",
+                check=True,
+            )
+            return
+        except subprocess.CalledProcessError as exc:
+            last_err = exc
+            echo(f"{cmd} 失败（exit {exc.returncode}），尝试备选方案 …")
+        except OSError as exc:
+            last_err = exc
+            echo(f"无法执行 {cmd}：{exc}")
+    raise HarnessUnavailable(f"依赖安装失败：{last_err}")
+
+
+def _resolve_tsx_import(repo: Path) -> str:
+    """解析 node --import 用的 tsx loader。
+
+    pnpm 默认不把 devDependency（tsx）提升到仓库根 node_modules，
+    裸 specifier `tsx/esm` 会报 ERR_MODULE_NOT_FOUND 而秒退。
+    优先用裸 specifier（根 node_modules 存在时），否则在 .pnpm 中找到
+    tsx 并按其 exports["./esm"] 解析到真实文件绝对路径。
+    """
+    if (repo / "node_modules" / "tsx" / "package.json").is_file():
+        return "tsx/esm"
+    pnpm_dir = repo / "node_modules" / ".pnpm"
+    if pnpm_dir.is_dir():
+        for cand in sorted(pnpm_dir.glob("tsx@*/node_modules/tsx"), reverse=True):
+            pkg = cand / "package.json"
+            if not pkg.is_file():
+                continue
+            try:
+                exports = json.loads(pkg.read_text(encoding="utf-8")).get("exports", {})
+            except (json.JSONDecodeError, OSError):
+                continue
+            target = exports.get("./esm")
+            if isinstance(target, dict):
+                target = target.get("import") or target.get("default") \
+                    or next(iter(target.values()), None)
+            if not target or not isinstance(target, str):
+                continue
+            loader = (cand / target).resolve()
+            if loader.is_file():
+                return loader.as_uri()  # Windows 上 --import 需要 file:// URL
+    raise HarnessUnavailable(
+        "未找到 tsx 加载器。请在仓库根执行 corepack pnpm install 后再启动运行时。")
 
 
 def start_runtime(
@@ -122,9 +176,9 @@ def start_runtime(
         env.pop(env_name, None)  # 避免继承来的垃圾 key
 
     entry = repo / DEMO_ENTRY
-    cmd = [*_node_cmd(), "--import", "tsx/esm", str(entry), str(config_path)]
-    proc = subprocess.Popen(
-        cmd,
+    cmd = [*_node_cmd(), "--import", _resolve_tsx_import(repo),
+           str(entry), str(config_path)]
+    popen_kwargs = dict(
         cwd=str(repo),
         env=env,
         stdin=subprocess.PIPE,
@@ -134,6 +188,15 @@ def start_runtime(
         encoding="utf-8",
         bufsize=1,
     )
+    if os.name == "nt":
+        # 必须开新进程组: 否则 node 子进程留在 Python 父进程组,
+        # dsh 运行时 boot 在加载 cordis 插件树时死锁(仅后台/无控制台启动会触发),
+        # 实测 CREATE_NEW_CONSOLE 会崩(STATUS_CONTROL_C_EXIT)且弹窗。
+        # 同时 CREATE_NO_WINDOW 抑制弹窗。两者组合: 既避开死锁又无可见窗口。
+        popen_kwargs["creationflags"] = (
+            subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW
+        )
+    proc = subprocess.Popen(cmd, **popen_kwargs)
     rpc = HarnessRpcClient(
         read=proc.stdout,
         write=proc.stdin,

@@ -165,8 +165,10 @@ export class HarnessSdkJsonRpcServer {
       }
     }
     if (liveRecord?.stale) {
-      this.sessions.delete(params.sessionId)
-      await liveRecord.handle.dispose().catch(() => {})
+      if (this.sessions.get(params.sessionId) === liveRecord) {
+        this.sessions.delete(params.sessionId)
+        await liveRecord.handle.dispose().catch(() => {})
+      }
     }
     const rec = await this.getOrCreateSession(params.sessionId)
     // An agent-loop-only reload disposes the loop's agents while this record

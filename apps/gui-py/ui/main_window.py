@@ -9,7 +9,7 @@ import subprocess
 
 from PyQt6.QtCore import Qt, QObject, QTimer, QSize, pyqtSignal
 from PyQt6.QtWidgets import (
-    QHBoxLayout, QInputDialog, QLabel, QMainWindow, QMessageBox,
+    QApplication, QHBoxLayout, QInputDialog, QLabel, QMainWindow, QMessageBox,
     QToolButton, QVBoxLayout, QWidget, QFileDialog, QFrame, QSizePolicy,
 )
 
@@ -24,10 +24,11 @@ from ui.betterdsh_ui import (
     Sidebar, MessagesArea, MessageRow, RichText, ThinkBlock, ToolCallCard,
     SendButton, ComposerInput, Toaster, ReasoningSlider, icon_sparkle,
     icon_attach, icon_export, icon_gear, md_to_html, now_stamp, greeting,
-    trim_title, ui_font, APP_QSS, BG, FG, FG2, MUTED, META, ACCENT,
+    trim_title, ui_font, set_theme, app_qss, is_dark, BG, FG, FG2, MUTED, META, ACCENT,
     ACCENT_ON, SURFACE, SURFACE_W, BORDER, BORDER_S, HOVER,
     SUCCESS, DANGER,
 )
+import ui.betterdsh_ui as betterdsh_ui
 
 
 def _strip_text_blocks(content) -> str:
@@ -49,6 +50,7 @@ class RuntimeBridge(QObject):
     status = pyqtSignal(str, str)
     notification = pyqtSignal(str, dict)
     log = pyqtSignal(str)
+    promptFinished = pyqtSignal(str, bool, str)
 
     def __init__(self, root: Path, repo: Path, config_path: Path):
         super().__init__()
@@ -134,6 +136,13 @@ class RuntimeBridge(QObject):
         self._stderr_thread = threading.Thread(target=loop, daemon=True)
         self._stderr_thread.start()
 
+    def _safe_request(self, method, params, timeout) -> BaseException | None:
+        try:
+            self._rpc.request(method, params, timeout=timeout)
+            return None
+        except BaseException as exc:
+            return exc
+
     def send_prompt(self, session_id: str, text: str, reasoning_effort: str | None = None):
         if self._rpc is None:
             raise HarnessUnavailable("运行时未就绪")
@@ -141,25 +150,34 @@ class RuntimeBridge(QObject):
                   "contentBlocks": [{"type": "text", "text": text}]}
         if reasoning_effort:
             params["reasoningEffort"] = reasoning_effort
-        return self._rpc.request("session/prompt", params, timeout=30)
+        threading.Thread(target=self._prompt_worker, args=(params,), daemon=True).start()
+
+    def _prompt_worker(self, params: dict):
+        sid = params.get("sessionId", "")
+        err = self._safe_request("session/prompt", params, 30)
+        self.promptFinished.emit(sid, err is None, "" if err is None else str(err))
 
     def set_reasoning_effort(self, session_id: str, effort: str):
-        """下发 reasoning effort 到运行时，失败时静默降级。"""
         if self._rpc is None:
-            return False
+            return
+        threading.Thread(target=self._reasoning_effort_worker,
+                         args=(session_id, effort), daemon=True).start()
+
+    def _reasoning_effort_worker(self, session_id: str, effort: str):
+        params = {"sessionId": session_id, "reasoningEffort": effort}
         for method in ("session/setReasoningEffort", "session/update"):
-            try:
-                self._rpc.request(method, {"sessionId": session_id,
-                                           "reasoningEffort": effort}, timeout=8)
-                return True
-            except BaseException:
-                continue
-        return False
+            if self._safe_request(method, params, 8) is None:
+                return
 
     def stop_async(self):
-        if self._proc is not None and self._rpc is not None:
-            stop_runtime(self._proc, self._rpc)
-        self._proc = None
+        proc, rpc = self._proc, self._rpc
+        if proc is not None and rpc is not None:
+            threading.Thread(target=self._stop_worker, args=(proc, rpc), daemon=True).start()
+
+    def _stop_worker(self, proc, rpc):
+        stop_runtime(proc, rpc)
+        if self._proc is proc:
+            self._proc = None
         self._rpc = None
         self.status.emit("stopped", "运行时已停止")
 
@@ -195,7 +213,9 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("BetterDSH · DeepSeek Harness")
         self.resize(1180, 760)
-        self.setStyleSheet(APP_QSS)
+        set_theme(self._settings.get("theme", "light"))
+        self._sync_colors()
+        self.setStyleSheet(app_qss())
 
         self._build_ui()
         self._connect_bridge()
@@ -213,7 +233,10 @@ class MainWindow(QMainWindow):
         self._load_history()
         self._update_slider_levels()
         lang = self._settings.get("lang", "zh")
-        set_lang(Lang(lang))
+        try:
+            set_lang(Lang(lang))
+        except ValueError:
+            set_lang(Lang("zh"))
         self._apply_lang()
         self._refresh_header()
         self._render_sidebar()
@@ -274,9 +297,10 @@ class MainWindow(QMainWindow):
                     time_str = dt.strftime("%m/%d %H:%M")
                 else:
                     time_str = now_stamp()
-                # 用 cwd 的最后一段作为标题，没有则用 agentPreset
+                # 优先用 webgui 会话标题（事件 session/title 折叠所得），回退到 cwd 末段或 agentPreset
                 cwd = s.get("cwd") or ""
-                title = Path(cwd).name if cwd else (s.get("agentPreset") or "webgui 会话")
+                title = (s.get("title")
+                         or (Path(cwd).name if cwd else (s.get("agentPreset") or "webgui 会话")))
                 self._sessions[sid] = {
                     "title": title,
                     "time": time_str,
@@ -388,6 +412,7 @@ class MainWindow(QMainWindow):
 
         self._composer_card = QFrame()
         self._composer_card.setObjectName("composerCard")
+        self._composer_card.setStyleSheet(f"background: {SURFACE}; border-radius: 14px;")
         cl = QVBoxLayout(self._composer_card)
         cl.setContentsMargins(16, 12, 12, 12)
         cl.setSpacing(8)
@@ -437,6 +462,7 @@ class MainWindow(QMainWindow):
     def _connect_bridge(self):
         self._bridge.status.connect(self._on_bridge_status)
         self._bridge.notification.connect(self._on_notification)
+        self._bridge.promptFinished.connect(self._on_prompt_finished)
         self._bridge.log.connect(lambda s: None)
 
     # ---------- 头部 / 侧边栏刷新 ----------
@@ -691,10 +717,16 @@ class MainWindow(QMainWindow):
             sid = self._new_chat()
         self._append_user_message(sid, text)
         try:
-            effort = self._settings.get("reasoning_effort")
-            self._bridge.send_prompt(sid, text, reasoning_effort=effort)
+            self._bridge.send_prompt(sid, text, reasoning_effort=self._settings.get("reasoning_effort"))
         except Exception as exc:
             self._append_tool_message(sid, f"{tr('send_failed')}：{exc}")
+            self.send_btn.set_busy(False)
+
+    def _on_prompt_finished(self, sid: str, ok: bool, error: str):
+        if ok:
+            return
+        self._append_tool_message(sid, f"{tr('send_failed')}：{error}")
+        if sid == self._active_id:
             self.send_btn.set_busy(False)
 
     def _append_user_message(self, sid: str, text: str):
@@ -781,13 +813,14 @@ class MainWindow(QMainWindow):
         data = event.get("data") or {}
 
         if etype == "turn/start":
-            self.chat_subtitle.setText(tr("assistant_thinking"))
-            self.send_btn.set_busy(True)
-            self.send_btn.setEnabled(False)
             self._live_row.pop(sid, None)
             self._live_rich.pop(sid, None)
             self._live_think.pop(sid, None)
             self._live_tools.clear()
+            if sid == self._active_id:
+                self.chat_subtitle.setText(tr("assistant_thinking"))
+                self.send_btn.set_busy(True)
+                self.send_btn.setEnabled(False)
 
         elif etype == "user/message":
             return
@@ -891,15 +924,16 @@ class MainWindow(QMainWindow):
                         break
 
         elif etype == "turn/end":
-            self.chat_subtitle.setText(tr("completed"))
-            self.send_btn.set_busy(False)
-            self._on_input_changed()
             self._live_row.pop(sid, None)
             self._live_rich.pop(sid, None)
             self._live_think.pop(sid, None)
             self._live_msg_ref.pop(sid, None)
             self._live_tools.clear()
             self._save_history()
+            if sid == self._active_id:
+                self.chat_subtitle.setText(tr("completed"))
+                self.send_btn.set_busy(False)
+                self._on_input_changed()
 
         if sid == self._active_id:
             self.messages.scroll_bottom()
@@ -950,6 +984,55 @@ class MainWindow(QMainWindow):
         else:
             self.sidebar.set_status(META, local_desc)
 
+    # ---------- 主题 ----------
+    def _sync_colors(self) -> None:
+        # set_theme 重绑定了 betterdsh_ui 的模块级颜色常量；本模块用 from-import
+        # 绑定的是 import 时刻的快照，需手动同步，否则内联样式标签 / 状态点在切
+        # 主题后仍是旧色（深色模式“失效”的根因）。
+        global BG, FG, FG2, MUTED, META, ACCENT, ACCENT_ON, SURFACE, SURFACE_W
+        global BORDER, BORDER_S, HOVER, SUCCESS, DANGER
+        BG = betterdsh_ui.BG
+        FG = betterdsh_ui.FG
+        FG2 = betterdsh_ui.FG2
+        MUTED = betterdsh_ui.MUTED
+        META = betterdsh_ui.META
+        ACCENT = betterdsh_ui.ACCENT
+        ACCENT_ON = betterdsh_ui.ACCENT_ON
+        SURFACE = betterdsh_ui.SURFACE
+        SURFACE_W = betterdsh_ui.SURFACE_W
+        BORDER = betterdsh_ui.BORDER
+        BORDER_S = betterdsh_ui.BORDER_S
+        HOVER = betterdsh_ui.HOVER
+        SUCCESS = betterdsh_ui.SUCCESS
+        DANGER = betterdsh_ui.DANGER
+
+    def _apply_theme(self) -> None:
+        """主题变更后重建中央控件并刷新全局 QSS（控件在 __init__ 固化了配色）。"""
+        set_theme(self._settings.get("theme", "light"))
+        self._sync_colors()
+        qss = app_qss()
+        app = QApplication.instance()
+        if app is not None:
+            app.setStyleSheet(qss)
+        self.setStyleSheet(qss)
+        old = self.centralWidget()
+        self._build_ui()
+        self._live_row.clear()
+        self._live_rich.clear()
+        self._live_think.clear()
+        self._text_buf.clear()
+        self._reason_buf.clear()
+        self._live_msg_ref.clear()
+        self._live_tools.clear()
+        self._render_sidebar()
+        self._refresh_header()
+        self._update_slider_levels()
+        self._apply_lang()
+        if self._active_id:
+            self._switch_to(self._active_id)
+        if old is not None:
+            old.deleteLater()
+
     # ---------- 设置 ----------
     def _open_settings(self):
         from harness.config import load_extra_entries, write_config
@@ -973,6 +1056,8 @@ class MainWindow(QMainWindow):
         if dlg.exec() != SettingsDialog.DialogCode.Accepted:
             return
         self._settings = dlg.current_settings()
+        if (self._settings.get("theme", "light") == "dark") != is_dark():
+            self._apply_theme()
         provider = self._settings.get("provider", "deepseek-official")
         entries = load_extra_entries(self._root)
         if provider == "custom" and self._settings.get("base_url"):

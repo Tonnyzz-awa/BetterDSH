@@ -20,28 +20,32 @@ from pathlib import Path
 from typing import Any
 
 _HAS_YAML = False
-_YAML = None
+_yaml = None
 try:
-    import yaml  # type: ignore[import-untyped]
+    import yaml as _yaml  # type: ignore[import-untyped]
     _HAS_YAML = True
-    _yaml = yaml
 except ImportError:
     pass
 
 
-class _StringScalarLoader(_yaml.SafeLoader):  # type: ignore[name-defined]
-    """YAML 1.1 会把 off/on/yes/no 解析成布尔；这个 Loader 只保留字符串
-    解析器，避免 reasoningEffort=off 变成 False。"""
+# 类定义必须在 PyYAML 存在时才做，否则 import 期就会 NameError 崩整个 harness。
+if _HAS_YAML:
+    class _StringScalarLoader(_yaml.SafeLoader):
+        """YAML 1.1 会把 off/on/yes/no 解析成布尔；这个 Loader 只保留字符串
+        解析器，避免 reasoningEffort=off 变成 False。"""
 
-
-_StringScalarLoader.yaml_implicit_resolvers = {
-    key: [(tag, regexp) for tag, regexp in rules if tag == "tag:yaml.org,2002:str"]
-    for key, rules in _StringScalarLoader.yaml_implicit_resolvers.items()
-}
+    _StringScalarLoader.yaml_implicit_resolvers = {
+        key: [(tag, regexp) for tag, regexp in rules if tag == "tag:yaml.org,2002:str"]
+        for key, rules in _StringScalarLoader.yaml_implicit_resolvers.items()
+    }
+else:
+    _StringScalarLoader = None
 
 
 def _load_yaml(text: str) -> Any:
     """用纯字符串 Loader 解析 YAML（不识别 off/on/yes/no 为布尔）。"""
+    if _StringScalarLoader is None:
+        raise TypeError("PyYAML 不可用")
     return _yaml.load(text, Loader=_StringScalarLoader)
 
 
@@ -206,6 +210,8 @@ def write_shared_settings(settings: dict[str, Any]) -> None:
         preset_sec = dict(data.get("agent-presets") or {})
         preset_sec[_AGENT_PRESET_YAML_KEY] = settings[_AGENT_PRESET_KEY]
         data["agent-presets"] = preset_sec
+    # 默认（无 preset）改 provider/model 也要落盘，否则重载被共享配置覆盖（静默回退）。
+    if changed or settings.get(_AGENT_PRESET_KEY):
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(

@@ -18,3 +18,35 @@ export const en = {
   'appearance.dark': 'Dark',
   'appearance.system': 'System',
 } satisfies Record<ThemeKey, string>
+
+/** Japanese dictionary. */
+export const ja = {
+  'appearance.title': '外観',
+  'appearance.light': 'ライト',
+  'appearance.dark': 'ダーク',
+  'appearance.system': 'システム設定に従う',
+} satisfies Record<ThemeKey, string>
+
+/** German dictionary. */
+export const de = {
+  'appearance.title': 'Darstellung',
+  'appearance.light': 'Hell',
+  'appearance.dark': 'Dunkel',
+  'appearance.system': 'System',
+} satisfies Record<ThemeKey, string>
+
+/** French dictionary. */
+export const fr = {
+  'appearance.title': 'Apparence',
+  'appearance.light': 'Clair',
+  'appearance.dark': 'Sombre',
+  'appearance.system': 'Système',
+} satisfies Record<ThemeKey, string>
+
+/** Literary Chinese (文言) dictionary. */
+export const wy = {
+  'appearance.title': '觀',
+  'appearance.light': '明',
+  'appearance.dark': '暗',
+  'appearance.system': '從系統',
+} satisfies Record<ThemeKey, string>

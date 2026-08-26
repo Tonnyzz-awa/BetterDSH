@@ -24,3 +24,47 @@ export const en = {
   'overlay.aria': '/{command} options',
   'listbox.aria': '/{command} matches',
 } satisfies Record<CommandKey, string>
+
+/** Japanese dictionary. */
+export const ja = {
+  'search.placeholder': '検索…',
+  'search.aria': 'オプションを絞り込む',
+  'status.loading': 'オプションを読み込み中…',
+  'status.applying': '適用中…',
+  'status.empty': 'オプションなし',
+  'overlay.aria': '/{command} のオプション',
+  'listbox.aria': '/{command} の候補',
+} satisfies Record<CommandKey, string>
+
+/** German dictionary. */
+export const de = {
+  'search.placeholder': 'Suchen…',
+  'search.aria': 'Optionen filtern',
+  'status.loading': 'Optionen werden geladen…',
+  'status.applying': 'Wird angewendet…',
+  'status.empty': 'Keine Optionen',
+  'overlay.aria': '/{command} Optionen',
+  'listbox.aria': '/{command} Treffer',
+} satisfies Record<CommandKey, string>
+
+/** French dictionary. */
+export const fr = {
+  'search.placeholder': 'Rechercher…',
+  'search.aria': 'Filtrer les options',
+  'status.loading': 'Chargement des options…',
+  'status.applying': 'Application…',
+  'status.empty': 'Aucune option',
+  'overlay.aria': 'Options /{command}',
+  'listbox.aria': 'Correspondances /{command}',
+} satisfies Record<CommandKey, string>
+
+/** Literary Chinese (文言) dictionary. */
+export const wy = {
+  'search.placeholder': '索…',
+  'search.aria': '篩選',
+  'status.loading': '載選項中…',
+  'status.applying': '施用中…',
+  'status.empty': '無選項',
+  'overlay.aria': '/{command} 選項',
+  'listbox.aria': '/{command} 匹',
+} satisfies Record<CommandKey, string>

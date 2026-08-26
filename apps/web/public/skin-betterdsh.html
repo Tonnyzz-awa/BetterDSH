@@ -64,6 +64,25 @@
   --container-gutter-tablet: 16px;
   --container-gutter-phone: 12px;
 }
+
+/* 深色模式：仅覆盖变量，全套组件随之切换（沿用纸感暖色调的暗色版） */
+body[data-theme="dark"] {
+  --bg: #1a1715;
+  --surface: #221e1b;
+  --surface-warm: #2c2723;
+  --fg: #f2ede6;
+  --fg-2: #d8d1c7;
+  --muted: #a59d91;
+  --meta: #837b6f;
+  --border: #342f2a;
+  --border-soft: #2c2723;
+  --accent: #e08a68;
+  --accent-on: #1a1715;
+  --success: #4cc38a;
+  --warn: #e0b341;
+  --danger: #e5706b;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 html {
   margin: 0; padding: 0;
@@ -99,7 +118,6 @@ a { color: inherit; text-decoration: none; }
 ::-webkit-scrollbar-thumb:hover { background: var(--meta); background-clip: content-box; border: 3px solid transparent; }
 .hidden { display: none !important; }
 
-/* display font helper */
 .serif { font-family: var(--font-display), "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "STSong", serif; }
 .mono { font-family: var(--font-mono), "PingFang SC", "Microsoft YaHei", monospace; font-variant-numeric: tabular-nums; }
 .icon { width: 18px; height: 18px; flex: none; }
@@ -267,7 +285,6 @@ a { color: inherit; text-decoration: none; }
 .btn-ghost:hover { background: color-mix(in oklch, var(--fg) 6%, transparent); color: var(--fg); }
 .menu-toggle { display: none; }
 
-/* messages */
 .messages { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .msg-inner { max-width: 780px; margin: 0 auto; padding: 24px 40px 36px; }
 .msg-row { display: flex; gap: 16px; padding: 28px 0; }
@@ -302,7 +319,6 @@ a { color: inherit; text-decoration: none; }
 .msg-body .md p { margin: 0 0 12px; line-height: 1.7; }
 .msg-body .md > :last-child { margin-bottom: 0; }
 
-/* thinking block */
 .think {
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-md);
@@ -342,7 +358,6 @@ a { color: inherit; text-decoration: none; }
 @keyframes blink { 0%, 80%, 100% { opacity: 0.25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-2px); } }
 .thinking-label { font-size: 13px; color: var(--muted); padding: 12px 14px 2px; }
 
-/* tool call blocks */
 .tool-block {
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-md);
@@ -383,7 +398,6 @@ a { color: inherit; text-decoration: none; }
 .tool-result { font-size: 13px; line-height: 1.6; color: var(--muted); white-space: pre-wrap; word-break: break-word; }
 .tool-block.err .tool-result { color: var(--danger); }
 
-/* markdown content */
 .md { font-size: 15.5px; overflow-wrap: break-word; }
 .md h3, .md h4, .md h5 {
   font-family: var(--font-display), "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", serif;
@@ -427,7 +441,6 @@ a { color: inherit; text-decoration: none; }
   background: transparent; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--fg);
 }
 
-/* empty state */
 .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; padding: 80px 40px; text-align: center; }
 .empty-greet {
   font-family: var(--font-display), "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", serif;
@@ -453,7 +466,6 @@ a { color: inherit; text-decoration: none; }
 .sugg-card .t { font-size: 14.5px; font-weight: 600; line-height: 1.4; }
 .sugg-card .d { font-size: 13px; color: var(--muted); line-height: 1.5; margin-top: 3px; }
 
-/* composer */
 .composer-wrap { padding: 18px 32px 22px; }
 .composer {
   max-width: 780px;
@@ -618,7 +630,6 @@ select.sel:focus { outline: none; border-color: var(--fg-2); }
 select.sel optgroup { font-weight: 600; font-size: 12px; color: var(--fg); }
 select.sel option { padding: 5px 4px; font-size: 13px; }
 select.sel option[disabled] { color: var(--meta); }
-/* API 配置表单 */
 .api-label { display: block; font-size: 12px; font-weight: 600; color: var(--fg-2); margin: 14px 0 6px; }
 .api-label:first-of-type { margin-top: 0; }
 .api-label .api-opt { font-weight: 400; color: var(--meta); }
@@ -651,7 +662,6 @@ select.sel option[disabled] { color: var(--meta); }
 .api-status { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-top: 10px; }
 .api-status.ok { color: var(--success); }
 .api-status.err { color: var(--danger); }
-/* 模型选择卡片 */
 .model-pick-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .model-card {
   display: flex; align-items: center; gap: 10px;
@@ -691,7 +701,6 @@ select.sel option[disabled] { color: var(--meta); }
 .ghost-link:hover { color: var(--fg); }
 .ghost-link svg { color: var(--fg-2); }
 
-/* floating menu */
 .menu {
   position: fixed;
   z-index: 80;
@@ -719,7 +728,6 @@ select.sel option[disabled] { color: var(--meta); }
 .menu-item.danger svg { color: var(--danger); }
 .menu-item .icon { margin-left: auto; color: var(--fg-2); }
 
-/* toast */
 .toast {
   position: fixed;
   top: 16px; right: 16px;
@@ -743,16 +751,13 @@ select.sel option[disabled] { color: var(--meta); }
 .toast-x { width: 24px; height: 24px; flex: none; display: grid; place-items: center; border-radius: 6px; color: var(--meta); }
 .toast-x:hover { background: color-mix(in oklch, var(--fg) 8%, transparent); color: var(--fg); }
 
-/* scrim (mobile) */
 .scrim { display: none; }
 
-/* animations */
 @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .msg-row.new { animation: msgIn 0.35s var(--ease-standard); }
 .msg-row.new .avatar { animation: avatarIn 0.4s var(--ease-standard); }
 @keyframes avatarIn { from { transform: scale(0.72); opacity: 0; } to { transform: none; opacity: 1; } }
 
-/* typing caret */
 .typing-caret {
   display: inline-block;
   width: 2px;
@@ -765,7 +770,6 @@ select.sel option[disabled] { color: var(--meta); }
 @keyframes caretBlink { 50% { opacity: 0; } }
 .think-body-inner .typing-caret { background: var(--muted); height: 1em; }
 
-/* suggestion cards entrance */
 .sugg-card { animation: cardIn 0.5s var(--ease-standard) both; }
 .sugg-card:nth-child(2) { animation-delay: 0.08s; }
 .sugg-card:nth-child(3) { animation-delay: 0.16s; }
@@ -816,7 +820,6 @@ select.sel option[disabled] { color: var(--meta); }
 <body>
 <div class="app">
 
-  <!-- ─────────── sidebar ─────────── -->
   <aside class="sidebar" id="sidebar" data-od-id="sidebar" aria-label="对话列表">
     <div class="sb-head">
       <div class="brand">
@@ -833,12 +836,12 @@ select.sel option[disabled] { color: var(--meta); }
 
     <button class="btn-new" id="btn-new" data-od-id="btn-new-chat">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-      <span>新建对话</span>
+      <span data-i18n="sb.new">新建对话</span>
     </button>
 
     <div class="sb-search" data-od-id="conversation-search">
       <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="sb-search" placeholder="搜索对话…" aria-label="搜索对话" autocomplete="off" />
+      <input type="text" id="sb-search" data-i18n-attr="placeholder:sb.search;aria-label:sb.search" placeholder="搜索对话…" aria-label="搜索对话" autocomplete="off" />
     </div>
 
     <div class="sb-scroll" id="sb-scroll" data-od-id="conversation-list"></div>
@@ -847,61 +850,61 @@ select.sel option[disabled] { color: var(--meta); }
       <div class="user-row" data-od-id="user-card">
         <div class="user-avatar" aria-hidden="true">L</div>
         <div class="user-meta">
-          <div class="user-name">本地用户</div>
-          <div class="user-sub">已连接</div>
+          <div class="user-name" data-i18n="sb.user">本地用户</div>
+          <div class="user-sub" data-i18n="sb.connected">已连接</div>
         </div>
-        <button class="icon-btn" id="btn-settings" aria-label="打开对话设置" data-od-id="btn-open-panel">
+        <button class="icon-btn" id="btn-settings" data-i18n-attr="aria-label:sb.aria.settings" data-od-id="btn-open-panel">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-theme" aria-label="切换深色模式" title="切换深色 / 浅色">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
       </div>
     </div>
   </aside>
 
-  <!-- ─────────── chat column ─────────── -->
   <main class="chat" data-od-id="chat" aria-label="对话区域">
     <header class="chat-header" data-od-id="chat-header">
-      <button class="icon-btn menu-toggle" id="btn-sidebar" aria-label="打开对话列表">
+      <button class="icon-btn menu-toggle" id="btn-sidebar" data-i18n-attr="aria-label:sb.aria.sidebar">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
-      <span class="crumb" id="crumb-a">对话</span>
+      <span class="crumb" id="crumb-a" data-i18n="crumb.chat">对话</span>
       <span class="crumb-sep">/</span>
       <span class="crumb strong" id="crumb-b">新对话</span>
       <div class="header-actions">
-        <button class="icon-btn" id="btn-export" aria-label="导出对话" data-od-id="btn-export">
+        <button class="icon-btn" id="btn-export" data-i18n-attr="aria-label:sb.aria.export" data-od-id="btn-export">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M4 20h16"/></svg>
         </button>
-        <button class="icon-btn" id="btn-panel" aria-label="打开对话设置" data-od-id="btn-panel">
+        <button class="icon-btn" id="btn-panel" data-i18n-attr="aria-label:sb.aria.settings" data-od-id="btn-panel">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg>
         </button>
       </div>
     </header>
 
     <div class="messages" id="messages" data-od-id="messages">
-      <!-- empty state -->
       <div class="empty hidden" id="empty-state" data-od-id="empty-state">
         <h1 class="empty-greet serif" id="empty-greet">下午好，今天想聊点什么？</h1>
-        <p class="empty-sub">从一个问题、一段文字或一份文档开始</p>
+        <p class="empty-sub" data-i18n="empty.sub">从一个问题、一段文字或一份文档开始</p>
         <div class="sugg-grid">
           <button class="sugg-card" data-prompt="帮我写一份产品发布公告的初稿，语气正式但不生硬，结尾带上行动号召。" data-od-id="sugg-write">
             <span class="sugg-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 4.8l4 4L8 20H4v-4L15.2 4.8z"/><path d="M12 8l4 4"/></svg></span>
-            <span><span class="t">写作与润色</span><br><span class="d">起草文案、改写语气、调整结构</span></span>
+            <span><span class="t" data-i18n="sugg.write.t">写作与润色</span><br><span class="d" data-i18n="sugg.write.d">起草文案、改写语气、调整结构</span></span>
           </button>
           <button class="sugg-card" data-prompt="解释一下下面这段代码在做什么，并指出可以优化的地方：" data-od-id="sugg-code">
             <span class="sugg-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/></svg></span>
-            <span><span class="t">代码理解与调试</span><br><span class="d">读懂逻辑、定位 Bug、给出修复</span></span>
+            <span><span class="t" data-i18n="sugg.code.t">代码理解与调试</span><br><span class="d" data-i18n="sugg.code.d">读懂逻辑、定位 Bug、给出修复</span></span>
           </button>
           <button class="sugg-card" data-prompt="把下面这段话翻译成英文，保持语气自然、接近母语表达：" data-od-id="sugg-translate">
             <span class="sugg-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h8M8 6v13M12 9h4.5M14.5 7v2M16.5 19L20 11l3.5 8M17.5 17h5"/></svg></span>
-            <span><span class="t">翻译与跨语言</span><br><span class="d">中英互译、术语统一、母语润色</span></span>
+            <span><span class="t" data-i18n="sugg.translate.t">翻译与跨语言</span><br><span class="d" data-i18n="sugg.translate.d">中英互译、术语统一、母语润色</span></span>
           </button>
           <button class="sugg-card" data-prompt="总结这篇文章的要点，用结构化列表输出，并给出关键结论。" data-od-id="sugg-summarize">
             <span class="sugg-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></span>
-            <span><span class="t">总结与提炼</span><br><span class="d">长文提炼、要点归纳、结论先行</span></span>
+            <span><span class="t" data-i18n="sugg.summarize.t">总结与提炼</span><br><span class="d" data-i18n="sugg.summarize.d">长文提炼、要点归纳、结论先行</span></span>
           </button>
         </div>
       </div>
 
-      <!-- active conversation -->
       <div class="hidden" id="conversation-view" data-od-id="conversation-view">
         <div class="msg-inner" id="conversation-inner"></div>
       </div>
@@ -915,7 +918,7 @@ select.sel option[disabled] { color: var(--meta); }
             添加附件
           </button>
           <button class="tool-btn model-pick" id="btn-model-pick" aria-label="选择模型" data-od-id="btn-model-pick">
-            <span id="model-pick-label">加载中…</span>
+            <span id="model-pick-label" data-i18n="loading">加载中…</span>
             <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <input type="file" id="attach-file" multiple hidden accept=".txt,.md,.py,.js,.json,.csv,.pdf,.doc,.docx" />
@@ -924,17 +927,17 @@ select.sel option[disabled] { color: var(--meta); }
           <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-5z"/></svg>
           <span class="fname" id="file-chip-name">file.txt</span>
           <span class="fsize" id="file-chip-size">0 KB</span>
-          <button class="file-chip-x" id="file-chip-x" aria-label="移除附件"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          <button class="file-chip-x" id="file-chip-x" data-i18n-attr="aria-label:attach.aria"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
         </div>
-        <textarea class="composer-input" id="composer-input" rows="1" placeholder="给 DeepSeek 发送消息…" aria-label="输入消息"></textarea>
+        <textarea class="composer-input" id="composer-input" rows="1" data-i18n-attr="placeholder:composer.placeholder;aria-label:composer.aria" placeholder="给 DeepSeek 发送消息…" aria-label="输入消息"></textarea>
         <div class="composer-foot">
           <div style="display:flex;align-items:center;gap:10px">
-            <span class="composer-hint">回车发送 · Shift + 回车换行</span>
+            <span class="composer-hint" data-i18n="composer.hint">回车发送 · Shift + 回车换行</span>
             <button class="tool-btn" id="btn-stop" style="display:none;font-size:12px;padding:4px 10px" title="停止生成">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
               停止
             </button>
-            <button class="tool-btn" id="btn-clear" style="font-size:12px;padding:4px 10px" title="清空对话">
+            <button class="tool-btn" id="btn-clear" style="font-size:12px;padding:4px 10px" data-i18n-attr="title:composer.clear">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
               清空
             </button>
@@ -945,55 +948,57 @@ select.sel option[disabled] { color: var(--meta); }
           </button>
         </div>
       </div>
-      <div class="composer-note">内容由 AI 生成，请核对关键信息后再采用</div>
+      <div class="composer-note" data-i18n="composer.note">内容由 AI 生成，请核对关键信息后再采用</div>
     </div>
   </main>
 
-  <!-- ─────────── settings dialog ─────────── -->
   <div class="dialog-backdrop" id="panel-backdrop" aria-hidden="true"></div>
-  <div class="dialog" id="panel" data-od-id="panel" role="dialog" aria-modal="true" aria-label="对话设置" aria-hidden="true">
+  <div class="dialog" id="panel" data-od-id="panel" role="dialog" aria-modal="true" data-i18n-attr="aria-label:panel.title" aria-hidden="true">
     <div class="dialog-head">
-      <span class="dialog-title">对话设置</span>
+      <span class="dialog-title" data-i18n="panel.title">对话设置</span>
       <div style="display:flex;align-items:center;gap:8px">
-        <button class="ghost-link" id="btn-skin-back" title="切回原版界面" style="margin:0;font-size:12px" onclick="try{localStorage.setItem('dsh.skin','default')}catch(e){}if(window.parent!==window){window.parent.location.href='/'}else{location.href='/'}">
+        <label class="ghost-link" style="margin:0;font-size:12px;gap:6px;cursor:default"><span data-i18n="lang.label">语言</span>
+          <select id="lang-select" class="sel" style="height:26px;font-size:12px;padding:0 2px"></select>
+        </label>
+        <button class="ghost-link" id="btn-skin-back" data-i18n-attr="title:panel.back.title" style="margin:0;font-size:12px" onclick="try{localStorage.setItem('dsh.skin','default')}catch(e){}if(window.parent!==window){window.parent.location.href='/'}else{location.href='/'}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-          切回原版
+          <span data-i18n="panel.back">切回原版</span>
         </button>
-        <button class="icon-btn" id="btn-panel-close" aria-label="关闭设置"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <button class="icon-btn" id="btn-panel-close" data-i18n-attr="aria-label:panel.close"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
     </div>
     <div class="dialog-body">
       <nav class="dialog-nav">
         <button class="dialog-nav-item active" id="nav-api" onclick="switchTab('api')">
           <svg class="dialog-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          API 配置
+          <span data-i18n="tab.api">API 配置</span>
         </button>
         <button class="dialog-nav-item" id="nav-model" onclick="switchTab('model')">
           <svg class="dialog-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-          模型选择
+          <span data-i18n="tab.model">模型选择</span>
         </button>
         <button class="dialog-nav-item" id="nav-connection" onclick="switchTab('connection')">
           <svg class="dialog-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-          连接状态
+          <span data-i18n="tab.connection">连接状态</span>
         </button>
         <button class="dialog-nav-item" id="nav-preset" onclick="switchTab('preset')">
           <svg class="dialog-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          Harness 模式
+          <span data-i18n="tab.preset">Harness 模式</span>
         </button>
         <button class="dialog-nav-item" id="nav-workspace" onclick="switchTab('workspace')">
           <svg class="dialog-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-          工作区
+          <span data-i18n="tab.workspace">工作区</span>
         </button>
       </nav>
       <div class="dialog-content" id="settings-content">
         <div class="setting" id="tab-api">
-          <div class="setting-label">API 配置</div>
-          <label class="api-label">供应商</label>
-          <select class="sel" id="api-provider" aria-label="选择供应商">
-            <optgroup label="已连接">
+          <div class="setting-label" data-i18n="tab.api">API 配置</div>
+          <label class="api-label" data-i18n="api.provider">供应商</label>
+          <select class="sel" id="api-provider" data-i18n-attr="aria-label:api.provider.aria">
+            <optgroup data-i18n-attr="label:api.connected" label="已连接">
               <option value="deepseek-official" data-url="https://api.deepseek.com" selected>DeepSeek</option>
             </optgroup>
-            <optgroup label="其他供应商">
+            <optgroup data-i18n-attr="label:api.other" label="其他供应商">
               <option value="openai" data-url="https://api.openai.com">OpenAI</option>
               <option value="anthropic" data-url="https://api.anthropic.com">Anthropic</option>
               <option value="openrouter" data-url="https://openrouter.ai/api/v1">OpenRouter</option>
@@ -1007,80 +1012,80 @@ select.sel option[disabled] { color: var(--meta); }
               <option value="cerebras" data-url="https://api.cerebras.ai">Cerebras</option>
               <option value="deepseek" data-url="https://api.deepseek.com">DeepSeek (pi-ai)</option>
             </optgroup>
-            <optgroup id="custom-providers" label="自定义"></optgroup>
+            <optgroup id="custom-providers" data-i18n-attr="label:api.custom" label="自定义"></optgroup>
           </select>
           <button class="ghost-link" id="btn-add-provider" style="margin-top:8px">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-            添加自定义供应商
+            <span data-i18n="api.add">添加自定义供应商</span>
           </button>
-          <label class="api-label">API Key</label>
+          <label class="api-label" data-i18n="api.key">API Key</label>
           <div class="api-key-row">
             <input class="api-input" id="api-key" type="password" placeholder="sk-…" autocomplete="off" spellcheck="false" />
-            <button class="api-save" id="api-key-save">保存</button>
+            <button class="api-save" id="api-key-save" data-i18n="api.save">保存</button>
           </div>
-          <label class="api-label">Base URL <span class="api-opt">（可选，留空用默认）</span></label>
+          <label class="api-label"><span data-i18n="api.baseurl">Base URL</span> <span class="api-opt" data-i18n="api.baseurl.optional">（可选，留空用默认）</span></label>
           <input class="api-input" id="api-baseurl" type="text" placeholder="https://api.deepseek.com" autocomplete="off" spellcheck="false" />
-          <button class="api-save api-save-main" id="api-save-prod">保存供应商配置</button>
+          <button class="api-save api-save-main" id="api-save-prod" data-i18n="api.save.prod">保存供应商配置</button>
           <div class="api-status" id="api-status"></div>
           <div class="dialog-backdrop no-blur" id="cp-backdrop" aria-hidden="true"></div>
-          <div class="dialog" id="cp-dialog" role="dialog" aria-modal="true" aria-label="添加自定义供应商" aria-hidden="true" style="width:min(420px,calc(100vw-32px));height:auto;max-height:min(520px,calc(100vh-64px))">
+          <div class="dialog" id="cp-dialog" role="dialog" aria-modal="true" data-i18n-attr="aria-label:api.custom.title" aria-hidden="true" style="width:min(420px,calc(100vw-32px));height:auto;max-height:min(520px,calc(100vh-64px))">
             <div class="dialog-head">
-              <span class="dialog-title">添加自定义供应商</span>
-              <button class="icon-btn" id="cp-close" aria-label="关闭"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+              <span class="dialog-title" data-i18n="api.custom.title">添加自定义供应商</span>
+              <button class="icon-btn" id="cp-close" data-i18n-attr="aria-label:panel.close"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
             </div>
             <div style="padding:20px 22px;overflow-y:auto">
-              <label class="api-label">名称</label>
+              <label class="api-label" data-i18n="api.custom.name">名称</label>
               <input class="api-input" id="cp-name" type="text" placeholder="my-provider" autocomplete="off" />
-              <label class="api-label">Base URL</label>
+              <label class="api-label" data-i18n="api.custom.url">Base URL</label>
               <input class="api-input" id="cp-url" type="text" placeholder="https://api.example.com" autocomplete="off" />
-              <label class="api-label">API 类型</label>
+              <label class="api-label" data-i18n="api.custom.type">API 类型</label>
               <select class="sel" id="cp-api">
                 <option value="openai-completions">OpenAI Completions</option>
                 <option value="openai-responses">OpenAI Responses</option>
                 <option value="anthropic-messages">Anthropic Messages</option>
               </select>
-              <label class="api-label">API Key</label>
+              <label class="api-label" data-i18n="api.key">API Key</label>
               <div class="api-key-row">
                 <input class="api-input" id="cp-key" type="password" placeholder="sk-…" autocomplete="off" />
-                <button class="api-save" id="cp-key-save">保存</button>
+                <button class="api-save" id="cp-key-save" data-i18n="api.save">保存</button>
               </div>
               <div style="display:flex;gap:8px;margin-top:16px">
-                <button class="api-save" id="cp-cancel" style="flex:1">取消</button>
-                <button class="api-save api-save-main" id="cp-confirm" style="flex:2;margin:0">确认添加</button>
+                <button class="api-save" id="cp-cancel" style="flex:1" data-i18n="api.custom.cancel">取消</button>
+                <button class="api-save api-save-main" id="cp-confirm" style="flex:2;margin:0" data-i18n="api.custom.confirm">确认添加</button>
               </div>
               <div class="api-status" id="cp-status"></div>
             </div>
           </div>
         </div>
         <div class="setting hidden" id="tab-model">
-          <div class="setting-label">模型选择</div>
+          <div class="setting-label" data-i18n="tab.model">模型选择</div>
           <div class="model-pick-group" id="model-list"></div>
-          <label class="api-label">思考级别</label>
-          <select class="sel" id="model-reasoning" aria-label="选择思考级别">
-            <option value="">默认</option>
+          <label class="api-label" data-i18n="model.reasoning">思考级别</label>
+          <select class="sel" id="model-reasoning" data-i18n-attr="aria-label:model.reasoning">
+            <option value="" data-i18n="default">默认</option>
           </select>
-          <button class="api-save api-save-main" id="api-save-model">保存模型配置</button>
+          <button class="api-save api-save-main" id="api-save-model" data-i18n="model.save">保存模型配置</button>
           <div class="api-status" id="api-model-status"></div>
         </div>
         <div class="setting hidden" id="tab-connection">
-          <div class="setting-label">连接状态</div>
-          <div class="status-row"><span class="status-dot" id="status-dot"></span><span id="status-text">连接中…</span></div>
+          <div class="setting-label" data-i18n="conn.label">连接状态</div>
+          <div class="status-row"><span class="status-dot" id="status-dot"></span><span id="status-text" data-i18n="conn.connecting">连接中…</span></div>
           <div class="endpoint mono" id="status-endpoint"></div>
         </div>
         <div class="setting hidden" id="tab-workspace">
-          <div class="setting-label">工作区</div>
+          <div class="setting-label" data-i18n="tab.workspace">工作区</div>
           <div class="model-pick-group" id="workspace-list"></div>
           <div class="workspace-form" style="margin-top:16px;display:flex;gap:8px">
-            <input class="api-input" id="ws-path" type="text" placeholder="输入或选择目录路径…" autocomplete="off" style="flex:1" />
-            <button class="api-save" id="ws-browse" title="选择目录">浏览…</button>
-            <button class="api-save" id="ws-create">创建</button>
+            <input class="api-input" id="ws-path" type="text" data-i18n-attr="placeholder:ws.placeholder" autocomplete="off" style="flex:1" />
+            <button class="api-save" id="ws-browse" data-i18n-attr="title:ws.pick" data-i18n="ws.browse">浏览…</button>
+            <button class="api-save" id="ws-create" data-i18n="ws.create">创建</button>
           </div>
           <div class="api-status" id="ws-status"></div>
         </div>
         <div class="setting hidden" id="tab-preset">
-          <div class="setting-label">Harness 模式</div>
+          <div class="setting-label" data-i18n="preset.label">Harness 模式</div>
           <div class="model-pick-group" id="preset-list">
-            <div style="padding:16px;text-align:center;color:var(--muted)">加载中…</div>
+            <div style="padding:16px;text-align:center;color:var(--muted)" data-i18n="loading">加载中…</div>
           </div>
           <div class="api-status" id="preset-status"></div>
         </div>
@@ -1110,22 +1115,249 @@ select.sel option[disabled] { color: var(--meta); }
     get: function (k, d) { try { var v = window.localStorage.getItem("ds." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
     set: function (k, v) { try { window.localStorage.setItem("ds." + k, JSON.stringify(v)); } catch (e) {} }
   };
+
+  /* i18n: self-contained 6-locale layer (zh/en/ja/de/fr/wy), mirroring the
+   * main app's LocaleRuntime selection. The skin is a standalone iframe with
+   * no cordis context, so it resolves the active locale itself: a saved
+   * preference (ds.locale) wins, then the browser languages, then zh. */
+  var LANGS = {
+    zh: { label: "中文" }, en: { label: "English" }, ja: { label: "日本語" },
+    de: { label: "Deutsch" }, fr: { label: "Français" }, wy: { label: "文言" }
+  };
+  var I18N = {
+    "app.suffix": { zh: "对话", en: "Chat", ja: "チャット", de: "Chat", fr: "Conversation", wy: "語" },
+    "lang.label": { zh: "语言", en: "Language", ja: "言語", de: "Sprache", fr: "Langue", wy: "語" },
+    "sb.new": { zh: "新建对话", en: "New chat", ja: "新規チャット", de: "Neuer Chat", fr: "Nouvelle conversation", wy: "新語" },
+    "sb.search": { zh: "搜索对话", en: "Search conversations", ja: "会話を検索", de: "Konversationen suchen", fr: "Rechercher des conversations", wy: "索語" },
+    "sb.user": { zh: "本地用户", en: "Local user", ja: "ローカルユーザー", de: "Lokaler Benutzer", fr: "Utilisateur local", wy: "本地用" },
+    "sb.connected": { zh: "已连接", en: "Connected", ja: "接続済み", de: "Verbunden", fr: "Connecté", wy: "已連" },
+    "sb.aria.settings": { zh: "打开对话设置", en: "Open settings", ja: "設定を開く", de: "Einstellungen öffnen", fr: "Ouvrir les paramètres", wy: "開置" },
+    "sb.aria.sidebar": { zh: "打开对话列表", en: "Open conversation list", ja: "会話リストを開く", de: "Konversationsliste öffnen", fr: "Ouvrir la liste de conversations", wy: "開列" },
+    "sb.aria.export": { zh: "导出对话", en: "Export conversation", ja: "会話を書き出し", de: "Konversation exportieren", fr: "Exporter la conversation", wy: "出語" },
+    "sb.aria.send": { zh: "发送消息", en: "Send message", ja: "メッセージを送信", de: "Nachricht senden", fr: "Envoyer le message", wy: "送語" },
+    "sb.theme.aria": { zh: "切换深色模式", en: "Toggle dark mode", ja: "ダークモード切替", de: "Dunkelmodus umschalten", fr: "Basculer en mode sombre", wy: "易暗" },
+    "sb.theme.title": { zh: "切换深色 / 浅色", en: "Toggle dark / light", ja: "ダーク/ライト切替", de: "Dunkel/Hell umschalten", fr: "Basculer sombre/clair", wy: "易暗/明" },
+    "crumb.chat": { zh: "对话", en: "Chat", ja: "チャット", de: "Chat", fr: "Conversation", wy: "語" },
+    "crumb.new": { zh: "新对话", en: "New chat", ja: "新規チャット", de: "Neuer Chat", fr: "Nouvelle conversation", wy: "新語" },
+    "greet.morning": { zh: "早上好", en: "Good morning", ja: "おはよう", de: "Guten Morgen", fr: "Bonjour", wy: "晨安" },
+    "greet.noon": { zh: "中午好", en: "Good noon", ja: "こんにちは", de: "Guten Tag", fr: "Bon après-midi", wy: "午安" },
+    "greet.afternoon": { zh: "下午好", en: "Good afternoon", ja: "こんにちは", de: "Guten Tag", fr: "Bon après-midi", wy: "午安" },
+    "greet.evening": { zh: "晚上好", en: "Good evening", ja: "こんばんは", de: "Guten Abend", fr: "Bonsoir", wy: "夕安" },
+    "greet.night": { zh: "凌晨好", en: "Good night", ja: "おやすみ", de: "Gute Nacht", fr: "Bonne nuit", wy: "夜安" },
+    "greet.hello": { zh: "你好", en: "Hello", ja: "こんにちは", de: "Hallo", fr: "Bonjour", wy: "安" },
+    "greet.suffix": { zh: "，今天想聊点什么？", en: ", what would you like to talk about today?", ja: "、今日は何をお話ししましょうか？", de: ", worüber möchtest du heute sprechen?", fr: ", de quoi veux-tu discuter aujourd'hui ?", wy: "，今欲語何？" },
+    "empty.sub": { zh: "从一个问题、一段文字或一份文档开始", en: "Start with a question, a piece of text, or a document", ja: "質問・文章・ドキュメントから始めよう", de: "Beginne mit einer Frage, einem Text oder einem Dokument", fr: "Commencez avec une question, un texte ou un document", wy: "以一問、一文、或一文書始" },
+    "sugg.write.t": { zh: "写作与润色", en: "Writing & polishing", ja: "執筆と推敲", de: "Schreiben & Lektorat", fr: "Rédaction et correction", wy: "屬文潤色" },
+    "sugg.write.d": { zh: "起草文案、改写语气、调整结构", en: "Draft copy, adjust tone, restructure", ja: "文案作成・トーン調整・構成見直し", de: "Entwürfe schreiben, Ton anpassen, Struktur ändern", fr: "Rédigez, ajustez le ton, restructurez", wy: "起草文案、改易語氣、調整結構" },
+    "sugg.code.t": { zh: "代码理解与调试", en: "Code understanding & debugging", ja: "コード理解とデバッグ", de: "Code verstehen & debuggen", fr: "Compréhension et débogage de code", wy: "程式理解與調試" },
+    "sugg.code.d": { zh: "读懂逻辑、定位 Bug、给出修复", en: "Understand logic, locate bugs, fix them", ja: "ロジック把握・バグ特定・修正", de: "Logik verstehen, Bugs finden, beheben", fr: "Comprenez la logique, trouvez les bugs, corrigez", wy: "讀懂邏輯、定位 Bug、給出修復" },
+    "sugg.translate.t": { zh: "翻译与跨语言", en: "Translation & multilingual", ja: "翻訳と多言語", de: "Übersetzung & Mehrsprachigkeit", fr: "Traduction et multilingue", wy: "翻譯與跨語言" },
+    "sugg.translate.d": { zh: "中英互译、术语统一、母语润色", en: "CN/EN translation, unify terms, polish", ja: "中日英翻訳・用語統一・母語推敲", de: "CN/EN übersetzen, Terminologie einheitlich, polieren", fr: "Traduction EN/FR, terminologie unifiée, correction", wy: "中英互譯、術語統一、母語潤色" },
+    "sugg.summarize.t": { zh: "总结与提炼", en: "Summarize & distill", ja: "要約と抽出", de: "Zusammenfassen & Verdichten", fr: "Résumer et synthétiser", wy: "總結與提煉" },
+    "sugg.summarize.d": { zh: "长文提炼、要点归纳、结论先行", en: "Distill long text, extract key points, lead with conclusion", ja: "長文要約・要点整理・結論ファースト", de: "Lange Texte verdichten, Kernpunkte, Fazit zuerst", fr: "Résumez, extrayez l'essentiel, concluez en premier", wy: "長文提煉、要點歸納、結論先行" },
+    "composer.placeholder": { zh: "给 DeepSeek 发送消息…", en: "Message DeepSeek…", ja: "DeepSeekにメッセージ…", de: "Nachricht an DeepSeek…", fr: "Message à DeepSeek…", wy: "致 DeepSeek 送語…" },
+    "composer.aria": { zh: "输入消息", en: "Type a message", ja: "メッセージを入力", de: "Nachricht eingeben", fr: "Saisir un message", wy: "入語" },
+    "composer.hint": { zh: "回车发送 · Shift + 回车换行", en: "Enter to send · Shift + Enter for newline", ja: "Enterで送信・Shift+Enterで改行", de: "Enter zum Senden · Shift+Enter Zeilenumbruch", fr: "Entrée pour envoyer · Maj+Entrée pour une nouvelle ligne", wy: "回車送·Shift+回車換行" },
+    "composer.note": { zh: "内容由 AI 生成，请核对关键信息后再采用", en: "Content generated by AI; verify key info before use", ja: "AI生成の内容です。重要事項は確認してください", de: "Vom AI erzeugt; prüfe Schlüsselinfos vor der Nutzung", fr: "Contenu généré par l'IA ; vérifiez les points clés avant usage", wy: "內容由 AI 生，請核對關鍵信息後再用" },
+    "composer.clear": { zh: "清空", en: "Clear", ja: "クリア", de: "Leeren", fr: "Effacer", wy: "清" },
+    "loading": { zh: "加载中…", en: "Loading…", ja: "読み込み中…", de: "Wird geladen…", fr: "Chargement…", wy: "載中…" },
+    "panel.title": { zh: "对话设置", en: "Settings", ja: "設定", de: "Einstellungen", fr: "Paramètres", wy: "置" },
+    "panel.back": { zh: "切回原版", en: "Back to classic", ja: "標準版に戻る", de: "Zur klassischen Version", fr: "Revenir à la version classique", wy: "返原版" },
+    "panel.back.title": { zh: "切回原版界面", en: "Return to classic UI", ja: "標準UIに戻る", de: "Zur klassischen Oberfläche", fr: "Revenir à l'interface classique", wy: "返原版界面" },
+    "panel.close": { zh: "关闭设置", en: "Close settings", ja: "設定を閉じる", de: "Einstellungen schließen", fr: "Fermer les paramètres", wy: "閉置" },
+    "tab.api": { zh: "API 配置", en: "API config", ja: "API設定", de: "API-Konfiguration", fr: "Configuration API", wy: "API 置" },
+    "tab.model": { zh: "模型选择", en: "Model", ja: "モデル選択", de: "Modell", fr: "Modèle", wy: "型擇" },
+    "tab.connection": { zh: "连接状态", en: "Connection", ja: "接続状態", de: "Verbindung", fr: "Connexion", wy: "連態" },
+    "tab.preset": { zh: "Harness 模式", en: "Harness mode", ja: "ハーネスモード", de: "Harness-Modus", fr: "Mode Harness", wy: "機制" },
+    "tab.workspace": { zh: "工作区", en: "Workspace", ja: "ワークスペース", de: "Arbeitsbereich", fr: "Espace de travail", wy: "工作域" },
+    "api.provider": { zh: "供应商", en: "Provider", ja: "プロバイダー", de: "Anbieter", fr: "Fournisseur", wy: "供者" },
+    "api.provider.aria": { zh: "选择供应商", en: "Select provider", ja: "プロバイダー選択", de: "Anbieter wählen", fr: "Sélectionner le fournisseur", wy: "擇供者" },
+    "api.connected": { zh: "已连接", en: "Connected", ja: "接続済み", de: "Verbunden", fr: "Connecté", wy: "已連" },
+    "api.other": { zh: "其他供应商", en: "Other providers", ja: "その他のプロバイダー", de: "Andere Anbieter", fr: "Autres fournisseurs", wy: "他供者" },
+    "api.custom": { zh: "自定义", en: "Custom", ja: "カスタム", de: "Benutzerdefiniert", fr: "Personnalisé", wy: "自定" },
+    "api.add": { zh: "添加自定义供应商", en: "Add custom provider", ja: "カスタムプロバイダーを追加", de: "Benutzerdefinierten Anbieter hinzufügen", fr: "Ajouter un fournisseur personnalisé", wy: "增自定供者" },
+    "api.key": { zh: "API Key", en: "API Key", ja: "APIキー", de: "API-Schlüssel", fr: "Clé API", wy: "API 鑰" },
+    "api.save": { zh: "保存", en: "Save", ja: "保存", de: "Speichern", fr: "Enregistrer", wy: "存" },
+    "api.baseurl": { zh: "Base URL", en: "Base URL", ja: "Base URL", de: "Base-URL", fr: "URL de base", wy: "Base URL" },
+    "api.baseurl.optional": { zh: "（可选，留空用默认）", en: "(optional, default if empty)", ja: "（省略可、空なら既定）", de: "(optional, Standard bei leer)", fr: "(facultatif, défaut si vide)", wy: "（可省，空則用默）" },
+    "api.save.prod": { zh: "保存供应商配置", en: "Save provider config", ja: "プロバイダー設定を保存", de: "Anbieterkonfiguration speichern", fr: "Enregistrer la config du fournisseur", wy: "存供者置" },
+    "api.custom.title": { zh: "添加自定义供应商", en: "Add custom provider", ja: "カスタムプロバイダーを追加", de: "Benutzerdefinierten Anbieter hinzufügen", fr: "Ajouter un fournisseur personnalisé", wy: "增自定供者" },
+    "api.custom.name": { zh: "名称", en: "Name", ja: "名前", de: "Name", fr: "Nom", wy: "名" },
+    "api.custom.url": { zh: "Base URL", en: "Base URL", ja: "Base URL", de: "Base-URL", fr: "URL de base", wy: "Base URL" },
+    "api.custom.type": { zh: "API 类型", en: "API type", ja: "APIタイプ", de: "API-Typ", fr: "Type d'API", wy: "API 型" },
+    "api.custom.cancel": { zh: "取消", en: "Cancel", ja: "キャンセル", de: "Abbrechen", fr: "Annuler", wy: "辭" },
+    "api.custom.confirm": { zh: "确认添加", en: "Confirm add", ja: "追加を確認", de: "Hinzufügen bestätigen", fr: "Confirmer l'ajout", wy: "確增" },
+    "model.label": { zh: "模型选择", en: "Model", ja: "モデル選択", de: "Modell", fr: "Modèle", wy: "型擇" },
+    "model.reasoning": { zh: "思考级别", en: "Reasoning level", ja: "推論レベル", de: "Denkstufe", fr: "Niveau de raisonnement", wy: "思級" },
+    "default": { zh: "默认", en: "Default", ja: "既定", de: "Standard", fr: "Par défaut", wy: "默" },
+    "model.save": { zh: "保存模型配置", en: "Save model config", ja: "モデル設定を保存", de: "Modellkonfiguration speichern", fr: "Enregistrer la config du modèle", wy: "存型置" },
+    "model.empty": { zh: "无可用模型", en: "No models available", ja: "利用可能なモデルなし", de: "Keine Modelle verfügbar", fr: "Aucun modèle disponible", wy: "無可用型" },
+    "model.none": { zh: "无模型", en: "No model", ja: "モデルなし", de: "Kein Modell", fr: "Aucun modèle", wy: "無型" },
+    "conn.label": { zh: "连接状态", en: "Connection", ja: "接続状態", de: "Verbindung", fr: "Connexion", wy: "連態" },
+    "conn.connecting": { zh: "连接中…", en: "Connecting…", ja: "接続中…", de: "Verbinde…", fr: "Connexion…", wy: "連中…" },
+    "conn.connected": { zh: "已连接", en: "Connected", ja: "接続済み", de: "Verbunden", fr: "Connecté", wy: "已連" },
+    "conn.disconnected": { zh: "未连接", en: "Disconnected", ja: "未接続", de: "Nicht verbunden", fr: "Déconnecté", wy: "未連" },
+    "ws.label": { zh: "工作区", en: "Workspace", ja: "ワークスペース", de: "Arbeitsbereich", fr: "Espace de travail", wy: "工作域" },
+    "ws.placeholder": { zh: "输入或选择目录路径…", en: "Enter or pick a directory path…", ja: "ディレクトリパスを入力・選択…", de: "Verzeichnispfad eingeben oder wählen…", fr: "Saisir ou choisir un chemin…", wy: "入或擇目錄路…" },
+    "ws.browse": { zh: "浏览…", en: "Browse…", ja: "参照…", de: "Durchsuchen…", fr: "Parcourir…", wy: "覽…" },
+    "ws.create": { zh: "创建", en: "Create", ja: "作成", de: "Erstellen", fr: "Créer", wy: "建" },
+    "ws.pick": { zh: "选择目录", en: "Pick directory", ja: "ディレクトリ選択", de: "Verzeichnis wählen", fr: "Choisir un dossier", wy: "擇目錄" },
+    "ws.empty": { zh: "无工作区", en: "No workspace", ja: "ワークスペースなし", de: "Kein Arbeitsbereich", fr: "Aucun espace de travail", wy: "無工作域" },
+    "ws.sessions": { zh: "会话", en: "sessions", ja: "セッション", de: "Sitzungen", fr: "conversations", wy: "會話" },
+    "preset.label": { zh: "Harness 模式", en: "Harness mode", ja: "ハーネスモード", de: "Harness-Modus", fr: "Mode Harness", wy: "機制" },
+    "preset.empty": { zh: "无可用预设", en: "No presets available", ja: "利用可能なプリセットなし", de: "Keine Presets verfügbar", fr: "Aucun preset disponible", wy: "無可用預設" },
+    "preset.load.fail": { zh: "加载预设失败", en: "Failed to load presets", ja: "プリセット読み込み失敗", de: "Laden der Presets fehlgeschlagen", fr: "Échec du chargement des presets", wy: "載預設敗" },
+    "preset.sys": { zh: "系统", en: "System", ja: "システム", de: "System", fr: "Système", wy: "系統" },
+    "preset.custom": { zh: "自定义", en: "Custom", ja: "カスタム", de: "Benutzerdefiniert", fr: "Personnalisé", wy: "自定" },
+    "attach.aria": { zh: "移除附件", en: "Remove attachment", ja: "添付を削除", de: "Anhang entfernen", fr: "Retirer la pièce jointe", wy: "移除附" },
+    "attach.files": { zh: "等 {n} 个文件", en: "and {n} more files", ja: "{n} 件のファイルなど", de: "und {n} weitere Dateien", fr: "et {n} autres fichiers", wy: "等 {n} 件" },
+    "toast.copy": { zh: "已复制到剪贴板", en: "Copied to clipboard", ja: "クリップボードにコピーしました", de: "In die Zwischenablage kopiert", fr: "Copié dans le presse-papier", wy: "已複製至剪貼板" },
+    "toast.copy.fail": { zh: "复制失败", en: "Copy failed", ja: "コピー失敗", de: "Kopieren fehlgeschlagen", fr: "Échec de la copie", wy: "複製敗" },
+    "toast.send.fail": { zh: "发送失败", en: "Failed to send", ja: "送信失敗", de: "Senden fehlgeschlagen", fr: "Échec d'envoi", wy: "送敗" },
+    "toast.stream.error": { zh: "流错误", en: "Stream error", ja: "ストリームエラー", de: "Streamfehler", fr: "Erreur de flux", wy: "流誤" },
+    "toast.session.load.fail": { zh: "加载会话失败", en: "Failed to load conversation", ja: "会話の読み込み失敗", de: "Laden der Konversation fehlgeschlagen", fr: "Échec du chargement", wy: "載語敗" },
+    "toast.loaded": { zh: "已加载 {n} 个会话", en: "Loaded {n} conversations", ja: "{n} 件の会話を読み込み", de: "{n} Konversationen geladen", fr: "{n} conversations chargées", wy: "已載 {n} 語" },
+    "toast.preset.switched": { zh: "已切换到", en: "Switched to", ja: "切り替え完了", de: "Gewechselt zu", fr: "Basculé vers", wy: "已易至" },
+    "toast.preset.fail": { zh: "切换失败", en: "Switch failed", ja: "切替失敗", de: "Wechsel fehlgeschlagen", fr: "Échec du basculement", wy: "易敗" },
+    "toast.restart": { zh: "本地服务已重启", en: "Local service restarted", ja: "ローカルサービスを再起動", de: "Lokaler Dienst neu gestartet", fr: "Service local redémarré", wy: "本地服務已重啟" },
+    "cred.configured": { zh: "凭据已配置", en: "Credentials configured", ja: "認証情報設定済み", de: "Anmeldedaten konfiguriert", fr: "Identifiants configurés", wy: "憑據已置" },
+    "cred.unsupported": { zh: "该供应商不支持凭据配置", en: "This provider doesn't support credentials", ja: "このプロバイダーは認証情報非対応", de: "Dieser Anbieter unterstützt keine Anmeldedaten", fr: "Ce fournisseur ne prend pas en charge les identifiants", wy: "此供者不支持憑據置" },
+    "cred.none": { zh: "未检测到凭据 — 请手动输入 API Key", en: "No credentials detected — enter your API key manually", ja: "認証情報が見つかりません — APIキーを手入力", de: "Keine Anmeldedaten erkannt — API-Schlüssel manuell eingeben", fr: "Aucun identifiant détecté — saisissez la clé API", wy: "未檢測到憑據—請手入 API Key" },
+    "cred.detect.fail": { zh: "凭据检测失败", en: "Credential detection failed", ja: "認証情報検出失敗", de: "Erkennung der Anmeldedaten fehlgeschlagen", fr: "Échec de détection des identifiants", wy: "憑據檢測敗" },
+    "cred.detect.request.fail": { zh: "凭据检测请求失败", en: "Credential check request failed", ja: "認証情報確認リクエスト失敗", de: "Anmeldedaten-Anfrage fehlgeschlagen", fr: "Échec de la requête de détection", wy: "憑據檢測請求敗" },
+    "cred.enter": { zh: "请输入 API Key", en: "Enter API key", ja: "APIキーを入力", de: "API-Schlüssel eingeben", fr: "Saisissez la clé API", wy: "請入 API Key" },
+    "cred.env": { zh: "环境变量", en: "Env var", ja: "環境変数", de: "Env-Variable", fr: "Variable d'env", wy: "環境變" },
+    "cred.saved": { zh: "API Key 已保存", en: "API key saved", ja: "APIキー保存済み", de: "API-Schlüssel gespeichert", fr: "Clé API enregistrée", wy: "API Key 已存" },
+    "cred.save.fail": { zh: "保存失败", en: "Save failed", ja: "保存失敗", de: "Speichern fehlgeschlagen", fr: "Échec de l'enregistrement", wy: "存敗" },
+    "provider.save": { zh: "供应商配置已保存", en: "Provider config saved", ja: "プロバイダー設定保存済み", de: "Anbieterkonfiguration gespeichert", fr: "Config du fournisseur enregistrée", wy: "供者置已存" },
+    "provider.save.empty": { zh: "请填写 Base URL", en: "Enter Base URL", ja: "Base URLを入力", de: "Base-URL eingeben", fr: "Saisissez l'URL de base", wy: "請填 Base URL" },
+    "provider.load.fail": { zh: "加载供应商失败", en: "Failed to load providers", ja: "プロバイダー読み込み失敗", de: "Laden der Anbieter fehlgeschlagen", fr: "Échec du chargement des fournisseurs", wy: "載供者敗" },
+    "model.select": { zh: "请选择模型", en: "Select a model", ja: "モデルを選択", de: "Wähle ein Modell", fr: "Sélectionnez un modèle", wy: "請擇型" },
+    "model.saved": { zh: "模型配置已保存", en: "Model config saved", ja: "モデル設定保存済み", de: "Modellkonfiguration gespeichert", fr: "Config du modèle enregistrée", wy: "型置已存" },
+    "provider.name.fill": { zh: "请填写名称和 Base URL", en: "Enter name and Base URL", ja: "名前とBase URLを入力", de: "Name und Base-URL eingeben", fr: "Saisissez le nom et l'URL", wy: "請填名與 Base URL" },
+    "provider.added": { zh: "已添加", en: "Added", ja: "追加済み", de: "Hinzugefügt", fr: "Ajouté", wy: "已增" },
+    "provider.add.fail": { zh: "添加失败", en: "Add failed", ja: "追加失敗", de: "Hinzufügen fehlgeschlagen", fr: "Échec de l'ajout", wy: "增敗" },
+    "ws.enter": { zh: "请输入路径", en: "Enter a path", ja: "パスを入力", de: "Pfad eingeben", fr: "Saisissez un chemin", wy: "請入路" },
+    "ws.created": { zh: "工作区已创建", en: "Workspace created", ja: "ワークスペース作成済み", de: "Arbeitsbereich erstellt", fr: "Espace de travail créé", wy: "工作域已建" },
+    "ws.create.fail": { zh: "创建失败", en: "Creation failed", ja: "作成失敗", de: "Erstellung fehlgeschlagen", fr: "Échec de la création", wy: "建敗" },
+    "ws.pick.fail": { zh: "目录选择失败", en: "Directory pick failed", ja: "ディレクトリ選択失敗", de: "Verzeichnisauswahl fehlgeschlagen", fr: "Échec de sélection du dossier", wy: "目錄擇敗" },
+    "conv.empty": { zh: "没有匹配的对话", en: "No matching conversations", ja: "一致する会話なし", de: "Keine passenden Konversationen", fr: "Aucune conversation correspondante", wy: "無匹配語" },
+    "conv.options": { zh: "对话选项", en: "Conversation options", ja: "会話オプション", de: "Konversationsoptionen", fr: "Options de conversation", wy: "語選項" },
+    "conv.rename": { zh: "重命名", en: "Rename", ja: "名前を変更", de: "Umbenennen", fr: "Renommer", wy: "易名" },
+    "conv.fork": { zh: "复制对话", en: "Duplicate conversation", ja: "会話を複製", de: "Konversation duplizieren", fr: "Dupliquer la conversation", wy: "複製語" },
+    "conv.delete": { zh: "删除对话", en: "Delete conversation", ja: "会話を削除", de: "Konversation löschen", fr: "Supprimer la conversation", wy: "刪除語" },
+    "conv.copy.done": { zh: "对话已复制", en: "Conversation duplicated", ja: "会話を複製しました", de: "Konversation dupliziert", fr: "Conversation dupliquée", wy: "語已複製" },
+    "conv.copy.fail": { zh: "复制失败", en: "Duplicate failed", ja: "複製失敗", de: "Duplizieren fehlgeschlagen", fr: "Échec de la duplication", wy: "複製敗" },
+    "conv.export.none": { zh: "当前没有可导出的对话", en: "No conversation to export", ja: "書き出し可能な会話なし", de: "Keine Konversation zum Exportieren", fr: "Aucune conversation à exporter", wy: "當前無可出語" },
+    "conv.export.done": { zh: "对话已导出为 Markdown", en: "Conversation exported as Markdown", ja: "会話をMarkdownで書き出し", de: "Konversation als Markdown exportiert", fr: "Conversation exportée en Markdown", wy: "語已出為 Markdown" },
+    "conv.export.title": { zh: "对话", en: "conversation", ja: "会話", de: "Konversation", fr: "conversation", wy: "語" },
+    "tool.think": { zh: "已深度思考", en: "Thought deeply", ja: "深く思考済み", de: "Tief nachgedacht", fr: "A réfléchi en profondeur", wy: "已深思考" },
+    "tool.run": { zh: "运行中", en: "Running", ja: "実行中", de: "Wird ausgeführt", fr: "En cours", wy: "行中" },
+    "tool.ok": { zh: "已完成", en: "Completed", ja: "完了", de: "Abgeschlossen", fr: "Terminé", wy: "已成" },
+    "tool.error": { zh: "出错", en: "Error", ja: "エラー", de: "Fehler", fr: "Erreur", wy: "誤" },
+    "tool.args": { zh: "参数", en: "Arguments", ja: "引数", de: "Argumente", fr: "Arguments", wy: "參" },
+    "tool.output": { zh: "输出", en: "Output", ja: "出力", de: "Ausgabe", fr: "Sortie", wy: "出" },
+    "tool.user": { zh: "用户", en: "User", ja: "ユーザー", de: "Benutzer", fr: "Utilisateur", wy: "用" },
+    "export.tool": { zh: "工具", en: "Tool", ja: "ツール", de: "Werkzeug", fr: "Outil", wy: "器" },
+    "export.user": { zh: "用户", en: "User", ja: "ユーザー", de: "Benutzer", fr: "Utilisateur", wy: "用" },
+    "tool.think.process": { zh: "思考过程", en: "Thinking process", ja: "思考プロセス", de: "Denkprozess", fr: "Processus de réflexion", wy: "思考過程" },
+    "day.today": { zh: "今天", en: "Today", ja: "今日", de: "Heute", fr: "Aujourd'hui", wy: "今" },
+    "day.yesterday": { zh: "昨天", en: "Yesterday", ja: "昨日", de: "Gestern", fr: "Hier", wy: "昨" },
+    "day.week": { zh: "前 7 天", en: "Last 7 days", ja: "過去7日間", de: "Letzte 7 Tage", fr: "7 derniers jours", wy: "前 7 日" },
+    "day.earlier": { zh: "更早", en: "Earlier", ja: "それ以前", de: "Früher", fr: "Plus tôt", wy: "更昔" },
+    "avatar.user": { zh: "我", en: "Me", ja: "私", de: "Ich", fr: "Moi", wy: "吾" },
+    "code.copy": { zh: "复制", en: "Copy", ja: "コピー", de: "Kopieren", fr: "Copier", wy: "複" },
+    "code.lang": { zh: "code", en: "code", ja: "コード", de: "Code", fr: "code", wy: "碼" }
+  };
+  function detectLocale() {
+    var saved = store.get("locale", null);
+    if (saved && LANGS[saved]) return saved;
+    var navs = (typeof navigator !== "undefined" && (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language])) || ["zh"];
+    for (var i = 0; i < navs.length; i++) {
+      var tag = String(navs[i] || "").toLowerCase();
+      if (LANGS[tag]) return tag;
+      var prim = tag.split("-")[0];
+      if (LANGS[prim]) return prim;
+    }
+    return "zh";
+  }
+  var curLocale = detectLocale();
+  function t(key, vars) {
+    var e = I18N[key];
+    var s = e ? (e[curLocale] !== undefined ? e[curLocale] : e.zh) : key;
+    if (vars) { for (var k in vars) { if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.replace(new RegExp("\\{" + k + "\\}", "g"), vars[k]); } }
+    return s;
+  }
+  function updateThemeBtn() {
+    var b = $("btn-theme");
+    if (!b) return;
+    var dark = document.body.getAttribute("data-theme") === "dark";
+    b.setAttribute("aria-label", t("sb.theme.aria"));
+    b.setAttribute("title", t("sb.theme.title"));
+    b.classList.toggle("on", dark);
+  }
+  function applyI18n() {
+    document.documentElement.lang = curLocale === "zh" ? "zh-CN" : curLocale;
+    document.title = "BetterDSH · " + t("app.suffix");
+    var nodes = document.querySelectorAll("[data-i18n]");
+    for (var i = 0; i < nodes.length; i++) { var k = nodes[i].getAttribute("data-i18n"); if (k) nodes[i].textContent = t(k); }
+    var attrs = document.querySelectorAll("[data-i18n-attr]");
+    for (var j = 0; j < attrs.length; j++) {
+      var spec = attrs[j].getAttribute("data-i18n-attr").split(";");
+      for (var s = 0; s < spec.length; s++) {
+        var kv = spec[s].split(":");
+        if (kv.length === 2) attrs[j].setAttribute(kv[0].trim(), t(kv[1].trim()));
+      }
+    }
+    updateThemeBtn();
+    if (typeof state !== "undefined" && state.activeId === null) { var cb = $("crumb-b"); if (cb) cb.textContent = t("crumb.new"); }
+    if ($("empty-greet")) $("empty-greet").textContent = greeting();
+    var sel = $("lang-select");
+    if (sel && sel.value !== curLocale) sel.value = curLocale;
+  }
+  function setLocale(loc) {
+    if (!LANGS[loc] || loc === curLocale) return;
+    curLocale = loc;
+    store.set("locale", loc);
+    applyI18n();
+    if (typeof renderList === "function") renderList();
+    if (typeof loadWorkspaces === "function") loadWorkspaces();
+    if (typeof loadAgentPresets === "function" && window.switchTab && currentTab === "preset") loadAgentPresets();
+  }
+  (function buildLangSelect() {
+    var sel = $("lang-select");
+    if (!sel) return;
+    sel.innerHTML = "";
+    for (var code in LANGS) {
+      if (!Object.prototype.hasOwnProperty.call(LANGS, code)) continue;
+      var o = document.createElement("option");
+      o.value = code; o.textContent = LANGS[code].label;
+      sel.appendChild(o);
+    }
+    sel.value = curLocale;
+    sel.addEventListener("change", function () { setLocale(sel.value); });
+  })();
+
+  function applyTheme(t) {
+    document.body.setAttribute("data-theme", t === "dark" ? "dark" : "light");
+  }
+  applyTheme(store.get("theme", "light"));
   var DATA = [];
 
   function rpcId() { return 'r-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); }
   function newSessionId() { return 'web-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10); }
 
   function dayGroup(ts) {
-    if (!ts) return "更早";
+    if (!ts) return t("day.earlier");
     var d = new Date(ts);
     var now = new Date();
     var dd = new Date(d.getFullYear(), d.getMonth(), d.getDate());
     var nd = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     var diff = Math.round((nd - dd) / 86400000);
-    if (diff <= 0) return "今天";
-    if (diff === 1) return "昨天";
-    if (diff <= 7) return "前 7 天";
-    return "更早";
+    if (diff <= 0) return t("day.today");
+    if (diff === 1) return t("day.yesterday");
+    if (diff <= 7) return t("day.week");
+    return t("day.earlier");
   }
   function timeOf(ts) {
     if (!ts) return "";
@@ -1173,7 +1405,7 @@ select.sel option[disabled] { color: var(--meta); }
       var p = msg.payload;
       if (!p) return;
       if (p.type === "session/event") onSessionEvent(p.sessionId, p.event);
-      else if (p.type === "stream/error") toast("流错误: " + (p.error && p.error.message || ""));
+      else if (p.type === "stream/error") toast(t("toast.stream.error") + ": " + (p.error && p.error.message || ""));
     };
     evtSource.onclose = function () {
       window.setTimeout(function () { connectSSE(); }, 3000);
@@ -1338,9 +1570,9 @@ select.sel option[disabled] { color: var(--meta); }
         i++;
         while (i < lines.length && !closeRe.test(lines[i].trim())) { buf.push(lines[i]); i++; }
         i++;
-        html += '<div class="code-wrap"><div class="code-head"><span class="lang">' + esc(lang || "code") + '</span><button class="code-copy" aria-label="复制代码">' +
+        html += '<div class="code-wrap"><div class="code-head"><span class="lang">' + esc(lang || t("code.lang")) + '</span><button class="code-copy" aria-label="' + t("code.copy") + '">' +
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
-          "复制</button></div><pre><code>" + esc(buf.join("\n")) + "</code></pre></div>";
+          t("code.copy") + '</button></div><pre><code>' + esc(buf.join("\n")) + "</code></pre></div>";
         continue;
       }
       if (t === "") { i++; continue; }
@@ -1446,12 +1678,12 @@ select.sel option[disabled] { color: var(--meta); }
           '<div class="conv' + (active ? " active" : "") + '" data-id="' + c.id + '" data-od-id="conv-' + c.id + '" tabindex="0" role="button" aria-label="' + esc(c.title) + '">' +
           '<span class="conv-title">' + esc(c.title) + '</span>' +
           '<span class="conv-meta">' + esc(c.time) + "</span>" +
-          '<button class="conv-menu" aria-label="对话选项">' +
+          '<button class="conv-menu" aria-label="' + t("conv.options") + '">' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>' +
           "</button></div>";
       });
     });
-    if (!html) { el.innerHTML = '<div class="list-empty">没有匹配的对话</div>'; return; }
+    if (!html) { el.innerHTML = '<div class="list-empty">' + t("conv.empty") + '</div>'; return; }
     el.innerHTML = html;
   }
 
@@ -1462,28 +1694,28 @@ select.sel option[disabled] { color: var(--meta); }
   }
   function greeting() {
     var h = new Date().getHours();
-    var g = "你好";
-    if (h < 6) g = "凌晨好";
-    else if (h < 12) g = "上午好";
-    else if (h < 14) g = "中午好";
-    else if (h < 18) g = "下午好";
-    return g + "，今天想聊点什么？";
+    var g = t("greet.hello");
+    if (h < 6) g = t("greet.night");
+    else if (h < 12) g = t("greet.morning");
+    else if (h < 14) g = t("greet.noon");
+    else if (h < 18) g = t("greet.afternoon");
+    return g + t("greet.suffix");
   }
   $("empty-greet").textContent = greeting();
   function avatarHTML(r) {
     return r === "u"
-      ? '<div class="avatar user" aria-hidden="true">我</div>'
+      ? '<div class="avatar user" aria-hidden="true">' + t("avatar.user") + '</div>'
       : '<div class="avatar ai" aria-hidden="true">DS</div>';
   }
   function thinkHTML(t) {
     return '<div class="think"><div class="think-head" role="button" tabindex="0">' +
       '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.8L19 9l-5.2 1.2L12 15l-1.8-4.8L5 9l5.2-1.2L12 3z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/></svg>' +
-      '<span>已深度思考</span><svg class="icon chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>' +
+      '<span>' + t("tool.think") + '</span><svg class="icon chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>' +
       "</div><div class=\"think-body\"><div class=\"think-body-inner\">" + esc(t) + "</div></div></div>";
   }
   function toolHTML(m) {
     var cls = m.isError ? "err" : (m.result ? "ok" : "run");
-    var status = m.isError ? "出错" : (m.result ? "已完成" : "运行中");
+    var status = m.isError ? t("tool.error") : (m.result ? t("tool.ok") : t("tool.run"));
     var h = '<div class="tool-block ' + cls + '" data-role="t">' +
       '<div class="tool-head" role="button" tabindex="0">' +
       '<span class="tool-dot"></span>' +
@@ -1491,8 +1723,8 @@ select.sel option[disabled] { color: var(--meta); }
       '<span class="tool-status">' + status + '</span>' +
       '<svg class="icon chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>' +
       '</div><div class="tool-body">';
-    if (m.args) h += '<div class="tool-sec"><div class="tool-sec-title">参数</div><pre class="tool-args">' + esc(m.args) + '</pre></div>';
-    if (m.result) h += '<div class="tool-sec"><div class="tool-sec-title">输出</div><div class="tool-result">' + esc(m.result) + '</div></div>';
+    if (m.args) h += '<div class="tool-sec"><div class="tool-sec-title">' + t("tool.args") + '</div><pre class="tool-args">' + esc(m.args) + '</pre></div>';
+    if (m.result) h += '<div class="tool-sec"><div class="tool-sec-title">' + t("tool.output") + '</div><div class="tool-result">' + esc(m.result) + '</div></div>';
     h += '</div></div>';
     return h;
   }
@@ -1501,13 +1733,13 @@ select.sel option[disabled] { color: var(--meta); }
     block.classList.remove("run", "ok", "err");
     block.classList.add(isErr ? "err" : "ok");
     var st = block.querySelector(".tool-status");
-    if (st) st.textContent = isErr ? "出错" : "已完成";
+    if (st) st.textContent = isErr ? t("tool.error") : t("tool.ok");
     if (text) {
       var body = block.querySelector(".tool-body");
       if (body && !block.querySelector(".tool-result")) {
         var sec = document.createElement("div");
         sec.className = "tool-sec";
-        sec.innerHTML = '<div class="tool-sec-title">输出</div><div class="tool-result">' + esc(text) + '</div>';
+        sec.innerHTML = '<div class="tool-sec-title">' + t("tool.output") + '</div><div class="tool-result">' + esc(text) + '</div>';
         body.appendChild(sec);
       } else if (body) {
         var r = body.querySelector(".tool-result");
@@ -1523,7 +1755,7 @@ select.sel option[disabled] { color: var(--meta); }
       '<div class="msg-body">' +
       '<div class="msg-meta">' +
       (m.r === "u"
-        ? '<span class="name">我</span>'
+        ? '<span class="name">' + t("avatar.user") + '</span>'
         : '<span class="name">DeepSeek</span><span class="model-tag">' + esc(m.model || "DS") + "</span>") +
       '<span class="stamp">' + esc(stamp || nowStamp()) + "</span></div>" +
       think +
@@ -1586,54 +1818,13 @@ select.sel option[disabled] { color: var(--meta); }
     $convView.classList.add("hidden");
     $convInner.innerHTML = "";
     $empty.classList.remove("hidden");
-    $("crumb-b").textContent = "新对话";
+    $("crumb-b").textContent = t("crumb.new");
     renderList();
     store.set("active", "");
     $("composer-input").focus();
   }
-  var reducedMotion = false;
-  try { reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
   function nearBottom() { return $messages.scrollHeight - $messages.scrollTop - $messages.clientHeight < 160; }
 
-  function typePlain(node, src, done) {
-    if (reducedMotion) { node.textContent = src; if (done) done(); return; }
-    var tn = document.createTextNode("");
-    var caret = document.createElement("span");
-    caret.className = "typing-caret"; caret.setAttribute("aria-hidden", "true");
-    node.appendChild(tn); node.appendChild(caret);
-    var step = Math.max(1, Math.round(src.length / 120));
-    var i = 0;
-    var timer = window.setInterval(function () {
-      i = Math.min(src.length, i + step);
-      tn.nodeValue = src.slice(0, i);
-      if (nearBottom()) scrollBottom(true);
-      if (i >= src.length) {
-        window.clearInterval(timer);
-        caret.remove();
-        if (done) done();
-      }
-    }, 16);
-  }
-
-  function typeMarkdown(node, src, done) {
-    if (reducedMotion) { node.innerHTML = renderMd(src); if (done) done(); return; }
-    var caret = document.createElement("span");
-    caret.className = "typing-caret"; caret.setAttribute("aria-hidden", "true");
-    node.appendChild(caret);
-    var step = Math.max(1, Math.round(src.length / 200));
-    var i = 0;
-    var timer = window.setInterval(function () {
-      i = Math.min(src.length, i + step);
-      node.innerHTML = renderMd(src.slice(0, i));
-      node.appendChild(caret);
-      if (nearBottom()) scrollBottom(true);
-      if (i >= src.length) {
-        window.clearInterval(timer);
-        caret.remove();
-        if (done) done();
-      }
-    }, 16);
-  }
 
   function makeLiveBubble(sid) {
     var row = document.createElement("div");
@@ -1676,7 +1867,7 @@ select.sel option[disabled] { color: var(--meta); }
     var conv = findConv(state.activeId);
     var isNew = false;
     if (!conv) {
-      conv = { id: state.pendingSid || newSessionId(), group: "今天", title: trimTitle(text), time: nowStamp(), ts: Date.now(), msgs: [] };
+      conv = { id: state.pendingSid || newSessionId(), group: t("day.today"), title: trimTitle(text), time: nowStamp(), ts: Date.now(), msgs: [] };
       DATA.unshift(conv);
       state.activeId = conv.id;
       state.pendingSid = null;
@@ -1703,7 +1894,7 @@ select.sel option[disabled] { color: var(--meta); }
     scrollBottom(true);
 
     var fail = function (err) {
-      if (conv._live) { conv._live.finalize("**发送失败:** " + esc(err.message || String(err))); conv._live = null; }
+      if (conv._live) { conv._live.finalize("**" + t("toast.send.fail") + ":** " + (err.message || String(err))); conv._live = null; }
       state.busy = false;
       sb.classList.remove("busy");
       var stopBtn = document.getElementById("btn-stop");
@@ -1732,7 +1923,7 @@ select.sel option[disabled] { color: var(--meta); }
 
   function trimTitle(t) {
     var s = t.trim().replace(/\s+/g, " ").replace(/[`*_#|]/g, "");
-    return s.length > 22 ? s.slice(0, 22) + "…" : (s || "新对话");
+    return s.length > 22 ? s.slice(0, 22) + "…" : (s || t("crumb.new"));
   }
 
   function scrollBottom(smooth) {
@@ -1741,7 +1932,7 @@ select.sel option[disabled] { color: var(--meta); }
   function copyText(txt) {
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(txt).then(function () { toast("已复制到剪贴板"); });
+        navigator.clipboard.writeText(txt).then(function () { toast(t("toast.copy")); });
       } else { fallbackCopy(txt); }
     } catch (e) { fallbackCopy(txt); }
   }
@@ -1749,7 +1940,7 @@ select.sel option[disabled] { color: var(--meta); }
     var ta = document.createElement("textarea");
     ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
     document.body.appendChild(ta); ta.select();
-    try { document.execCommand("copy"); toast("已复制到剪贴板"); } catch (e) { toast("复制失败"); }
+    try { document.execCommand("copy"); toast(t("toast.copy")); } catch (e) { toast(t("toast.copy.fail")); }
     document.body.removeChild(ta);
   }
   var toastTimer = null;
@@ -1875,7 +2066,7 @@ select.sel option[disabled] { color: var(--meta); }
     var inactive = apiProviders.filter(function (p) { return !p.active; });
     if (active.length) {
       var og = document.createElement("optgroup");
-      og.label = "已连接";
+      og.label = t("api.connected");
       active.forEach(function (p) {
         var o = document.createElement("option");
         o.value = p.provider;
@@ -1888,7 +2079,7 @@ select.sel option[disabled] { color: var(--meta); }
     }
     if (inactive.length) {
       var og2 = document.createElement("optgroup");
-      og2.label = "其他供应商";
+      og2.label = t("api.other");
       inactive.forEach(function (p) {
         var o = document.createElement("option");
         o.value = p.provider;
@@ -1913,8 +2104,8 @@ select.sel option[disabled] { color: var(--meta); }
     var baseEl = document.getElementById("api-baseurl");
     var keyEl = document.getElementById("api-key");
     if (baseEl) baseEl.value = url;
-    if (keyEl && ref) keyEl.placeholder = "环境变量: " + ref;
-    if (!ref) { setStatus("该供应商不支持凭据配置", true); return; }
+    if (keyEl && ref) keyEl.placeholder = t("cred.env") + ": " + ref;
+    if (!ref) { setStatus(t("cred.unsupported"), true); return; }
     rpc("llm.models", {}).then(function (v) {
       var groups = (v && v.groups) || [];
       var g = null;
@@ -1930,7 +2121,7 @@ select.sel option[disabled] { color: var(--meta); }
             '<div class="model-card-name">' + esc(m.name || m.id) + '</div>' +
             (m.description ? '<div class="model-card-desc">' + esc(m.description) + '</div>' : '') +
             '</div></div>';
-        }).join("") : '<div style="padding:20px;text-align:center;color:var(--muted)">无可用模型</div>';
+        }).join("") : '<div style="padding:20px;text-align:center;color:var(--muted)">' + t("model.empty") + '</div>';
         ml.querySelectorAll(".model-card").forEach(function (card) {
           card.addEventListener("click", function () {
             ml.querySelectorAll(".model-card").forEach(function (c) { c.classList.remove("on"); });
@@ -1959,7 +2150,7 @@ select.sel option[disabled] { color: var(--meta); }
           if (res && res.result && res.result.ok) {
             var cr = res.result.value;
             var c = cr && cr.credentials && cr.credentials[r];
-            if (c && c.configured) setStatus(c.source ? "凭据已配置（" + c.source + "）" : "凭据已配置", false);
+            if (c && c.configured) setStatus(c.source ? t("cred.configured") + "（" + c.source + "）" : t("cred.configured"), false);
           }
         })
         .catch(function() {});
@@ -2027,7 +2218,7 @@ select.sel option[disabled] { color: var(--meta); }
       method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify({ type: "client-request", rpcId: rpcId(), method: "session.list", payload: {} })
     }).then(function (r) { return r.json(); }).then(function (res) {
-      if (!res || !res.result || !res.result.ok || !res.result.value) { toast("加载会话失败: 无数据"); return; }
+      if (!res || !res.result || !res.result.ok || !res.result.value) { toast(t("toast.session.load.fail")); return; }
       var items = res.result.value.items || [];
       var seen = {};
       DATA.forEach(function (c) { seen[c.id] = true; });
@@ -2042,12 +2233,12 @@ select.sel option[disabled] { color: var(--meta); }
         var d = new Date(c.ts);
         var nd = new Date();
         var diff = Math.round((nd - d) / 86400000);
-        c.group = diff <= 0 ? "今天" : diff === 1 ? "昨天" : diff <= 7 ? "前 7 天" : "更早";
+        c.group = diff <= 0 ? t("day.today") : diff === 1 ? t("day.yesterday") : diff <= 7 ? t("day.week") : t("day.earlier");
         c.time = (d.getHours() < 10 ? "0" + d.getHours() : d.getHours()) + ":" + (d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes());
       });
       renderList();
-      toast("已加载 " + added + " 个会话");
-    }).catch(function (err) { toast("加载会话失败: " + (err.message || "")); });
+      toast(t("toast.loaded", { n: added }));
+    }).catch(function (err) { toast(t("toast.session.load.fail") + ": " + (err.message || "")); });
   }
 
   function loadAll() {
@@ -2058,7 +2249,7 @@ select.sel option[disabled] { color: var(--meta); }
       if (!selectedProvider) selectedProvider = active.length ? active[0].provider : (apiProviders[0] && apiProviders[0].provider) || "";
       fillProviderSelect();
       loadProviderConfig();
-    }).catch(function (err) { setStatus("加载供应商失败: " + (err.message || ""), true); });
+    }).catch(function (err) { setStatus(t("provider.load.fail") + ": " + (err.message || ""), true); });
     loadModels().then(function () {
       rpc("settings.describe", {}).then(function (sd) {
         if (!sd || !sd.namespaces) return;
@@ -2087,14 +2278,14 @@ select.sel option[disabled] { color: var(--meta); }
       var dot = document.getElementById("status-dot");
       var ep = document.getElementById("status-endpoint");
       if (sd && sd.writable !== undefined) {
-        if (st) st.textContent = "已连接";
+        if (st) st.textContent = t("conn.connected");
         if (dot) dot.style.background = "var(--success)";
         if (ep) ep.textContent = location.origin;
       }
     }).catch(function () {
       var st = document.getElementById("status-text");
       var dot = document.getElementById("status-dot");
-      if (st) st.textContent = "未连接";
+      if (st) st.textContent = t("conn.disconnected");
       if (dot) dot.style.background = "var(--danger)";
     });
   }
@@ -2104,11 +2295,11 @@ select.sel option[disabled] { color: var(--meta); }
   function loadAgentPresets() {
     var list = document.getElementById("preset-list");
     if (!list) return;
-    list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted)">加载中…</div>';
+    list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted)">' + t("loading") + '</div>';
     api.post("agentPreset.list", {}).then(function (res) {
       var v = (res && res.result && res.result.ok) ? res.result.value : null;
       if (!v || !v.presets || !v.presets.length) {
-        list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted)">无可用预设</div>';
+        list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted)">' + t("preset.empty") + '</div>';
         return;
       }
       agentPresets = v.presets;
@@ -2117,9 +2308,9 @@ select.sel option[disabled] { color: var(--meta); }
       list.innerHTML = agentPresets.map(function (p) {
         var active = currentPreset === p.id;
         var tag = p.trust === "system"
-          ? '<span style="color:var(--meta);font-size:10px;border:1px solid var(--border-soft);border-radius:4px;padding:1px 5px;margin-left:6px">系统</span>'
-          : '<span style="color:var(--accent);font-size:10px;border:1px solid var(--accent);border-radius:4px;padding:1px 5px;margin-left:6px">自定义</span>';
-        var def = p.isDefault ? '<span style="color:var(--success);font-size:10px;margin-left:6px">默认</span>' : "";
+          ? '<span style="color:var(--meta);font-size:10px;border:1px solid var(--border-soft);border-radius:4px;padding:1px 5px;margin-left:6px">' + t("preset.sys") + '</span>'
+          : '<span style="color:var(--accent);font-size:10px;border:1px solid var(--accent);border-radius:4px;padding:1px 5px;margin-left:6px">' + t("preset.custom") + '</span>';
+        var def = p.isDefault ? '<span style="color:var(--success);font-size:10px;margin-left:6px">' + t("default") + '</span>' : "";
         return '<div class="model-card' + (active ? " on" : "") + '" data-preset="' + esc(p.id) + '">' +
           '<div class="model-card-radio"></div>' +
           '<div class="model-card-info">' +
@@ -2134,59 +2325,59 @@ select.sel option[disabled] { color: var(--meta); }
           list.querySelectorAll(".model-card").forEach(function (c) { c.classList.remove("on"); });
           card.classList.add("on");
           api.post("settings.update", { ns: "agent-presets", patch: { default: pid } }).then(function () {
-            toast("已切换到: " + (card.querySelector(".model-card-name").textContent || pid));
+            toast(t("toast.preset.switched") + ": " + (card.querySelector(".model-card-name").textContent || pid));
           }).catch(function (err) {
             var ps = document.getElementById("preset-status");
-            if (ps) { ps.textContent = "切换失败: " + (err.message || ""); ps.className = "api-status err"; }
+            if (ps) { ps.textContent = t("toast.preset.fail") + ": " + (err.message || ""); ps.className = "api-status err"; }
           });
         });
       });
     }).catch(function (err) {
-      list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted)">加载预设失败: ' + esc(err.message || String(err)) + '</div>';
+      list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted)">' + t("preset.load.fail") + ': ' + esc(err.message || String(err)) + '</div>';
     });
   }
 
   function saveApiKey() {
     var key = document.getElementById("api-key");
-    if (!key || !key.value.trim()) { setStatus("请输入 API Key", true); return; }
+    if (!key || !key.value.trim()) { setStatus(t("cred.enter"), true); return; }
     var ref = credRefFor(findProvider(selectedProvider));
-    if (!ref) { setStatus("该供应商不支持凭据配置", true); return; }
+    if (!ref) { setStatus(t("cred.unsupported"), true); return; }
     rpc("credentials.set", { ref: ref, value: key.value.trim() }).then(function () {
       key.value = "";
-      setStatus("API Key 已保存", false);
-      toast("API Key 已保存");
-    }).catch(function (err) { setStatus("保存失败: " + (err.message || ""), true); });
+      setStatus(t("cred.saved"), false);
+      toast(t("cred.saved"));
+    }).catch(function (err) { setStatus(t("cred.save.fail") + ": " + (err.message || ""), true); });
   }
 
   function saveProdConfig() {
     var baseEl = document.getElementById("api-baseurl");
-    if (baseEl && !baseEl.value.trim()) { setStatus("请填写 Base URL", true); return; }
-    setStatus("供应商配置已保存", false);
-    toast("供应商配置已保存");
+    if (baseEl && !baseEl.value.trim()) { setStatus(t("provider.save.empty"), true); return; }
+    setStatus(t("provider.save"), false);
+    toast(t("provider.save"));
   }
 
   function saveModelConfig() {
-    if (!selectedModel || !selectedModel.model) { setStatus("请选择模型", true); return; }
+    if (!selectedModel || !selectedModel.model) { setStatus(t("model.select"), true); return; }
     var rs = document.getElementById("model-reasoning");
     var patch = { provider: selectedProvider, model: selectedModel.model };
     if (rs && rs.value) patch.reasoningEffort = rs.value;
     rpc("settings.update", { ns: "agent-default-model", patch: patch }).then(function () {
       rebuildModelPicker();
-      setStatus("模型配置已保存", false);
-      toast("模型配置已保存");
-    }).catch(function (err) { setStatus("保存失败: " + (err.message || ""), true); });
+      setStatus(t("model.saved"), false);
+      toast(t("model.saved"));
+    }).catch(function (err) { setStatus(t("cred.save.fail") + ": " + (err.message || ""), true); });
   }
 
   function rebuildModelPicker() {
     var el = document.getElementById("model-pick-label");
     if (!el) return;
-    if (!modelCatalog.length) { el.textContent = "加载中…"; return; }
+    if (!modelCatalog.length) { el.textContent = t("loading"); return; }
     var cur = null;
     if (selectedModel) {
       for (var i = 0; i < modelCatalog.length; i++) { if (modelCatalog[i].model === selectedModel.model) { cur = modelCatalog[i]; break; } }
     }
     if (!cur) cur = modelCatalog[0];
-    el.textContent = cur ? (cur.name || cur.model) : "无模型";
+    el.textContent = cur ? (cur.name || cur.model) : t("model.none");
   }
   function rebuildModelList() {
     var cards = document.querySelectorAll("#model-list .model-card");
@@ -2254,7 +2445,7 @@ select.sel option[disabled] { color: var(--meta); }
     var url = document.getElementById("cp-url").value.trim();
     var apiType = document.getElementById("cp-api").value;
     var key = document.getElementById("cp-key").value.trim();
-    if (!name || !url) { setStatus("请填写名称和 Base URL", true); return; }
+    if (!name || !url) { setStatus(t("provider.name.fill"), true); return; }
     var pid = "custom-" + name.replace(/[^a-zA-Z0-9_-]/g, "_").toLowerCase();
     var ref = pid.toUpperCase() + "_API_KEY";
     var chain = key ? rpc("credentials.set", { ref: ref, value: key }) : Promise.resolve();
@@ -2267,8 +2458,8 @@ select.sel option[disabled] { color: var(--meta); }
         return rpc("settings.update", { ns: "llm-pi-ai", patch: { providers: providers } });
       });
     }).then(function () {
-      setStatus("已添加: " + name, false);
-      toast("已添加 " + name);
+      setStatus(t("provider.added") + ": " + name, false);
+      toast(t("provider.added") + " " + name);
       closeCpDialog();
       return rpc("llm.providers", {});
     }).then(function (v) {
@@ -2278,7 +2469,7 @@ select.sel option[disabled] { color: var(--meta); }
       var sel = document.getElementById("api-provider");
       if (sel) { try { sel.value = pid; } catch (e) {} }
       loadProviderConfig();
-    }).catch(function (err) { setStatus("添加失败: " + (err.message || ""), true); });
+    }).catch(function (err) { setStatus(t("provider.add.fail") + ": " + (err.message || ""), true); });
   });
 
   function loadWorkspaces() {
@@ -2296,9 +2487,9 @@ select.sel option[disabled] { color: var(--meta); }
           '<div class="model-card-radio"></div>' +
           '<div class="model-card-info">' +
           '<div class="model-card-name">' + esc(w.title) + '</div>' +
-          '<div class="model-card-desc">' + esc(w.path) + ' · ' + w.sessionIds.length + ' 会话</div>' +
+          '<div class="model-card-desc">' + esc(w.path) + ' · ' + w.sessionIds.length + ' ' + t("ws.sessions") + '</div>' +
           '</div></div>';
-      }).join("") || '<div style="padding:20px;text-align:center;color:var(--muted)">无工作区</div>';
+      }).join("") || '<div style="padding:20px;text-align:center;color:var(--muted)">' + t("ws.empty") + '</div>';
       Array.prototype.forEach.call(list.querySelectorAll(".model-card[data-wid]"), function (card) {
         card.addEventListener("click", function () {
           var wid = card.getAttribute("data-wid");
@@ -2317,13 +2508,13 @@ select.sel option[disabled] { color: var(--meta); }
   }
   document.getElementById("ws-create").addEventListener("click", function () {
     var path = document.getElementById("ws-path").value.trim();
-    if (!path) { document.getElementById("ws-status").textContent = "请输入路径"; document.getElementById("ws-status").className = "api-status err"; return; }
+    if (!path) { document.getElementById("ws-status").textContent = t("ws.enter"); document.getElementById("ws-status").className = "api-status err"; return; }
     rpc("workspace.create", { path: path }).then(function () {
       document.getElementById("ws-path").value = "";
-      document.getElementById("ws-status").textContent = "工作区已创建"; document.getElementById("ws-status").className = "api-status ok";
+      document.getElementById("ws-status").textContent = t("ws.created"); document.getElementById("ws-status").className = "api-status ok";
       loadWorkspaces();
     }).catch(function (err) {
-      document.getElementById("ws-status").textContent = "创建失败: " + (err.message || ""); document.getElementById("ws-status").className = "api-status err";
+      document.getElementById("ws-status").textContent = t("ws.create.fail") + ": " + (err.message || ""); document.getElementById("ws-status").className = "api-status err";
     });
   });
   document.getElementById("ws-path").addEventListener("keydown", function (e) { if (e.key === "Enter") document.getElementById("ws-create").click(); });
@@ -2332,7 +2523,7 @@ select.sel option[disabled] { color: var(--meta); }
       if (v && v.path) document.getElementById("ws-path").value = v.path;
     }).catch(function (err) {
       var st = document.getElementById("ws-status");
-      if (st) { st.textContent = "目录选择失败: " + (err.message || ""); st.className = "api-status err"; }
+      if (st) { st.textContent = t("ws.pick.fail") + ": " + (err.message || ""); st.className = "api-status err"; }
     });
   });
   var $input = $("composer-input");
@@ -2368,6 +2559,12 @@ select.sel option[disabled] { color: var(--meta); }
   $("btn-sidebar").addEventListener("click", function () { setSidebar(!state.sidebarOpen); });
   var collapseBtn = $("btn-collapse");
   if (collapseBtn) collapseBtn.addEventListener("click", toggleSidebar);
+  var themeBtn = $("btn-theme");
+  if (themeBtn) themeBtn.addEventListener("click", function () {
+    var next = document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(next);
+    store.set("theme", next);
+  });
   $("scrim").addEventListener("click", function () { setSidebar(false); });
   $("panel-backdrop").addEventListener("click", function () { setPanel(false); });
   $("btn-stop").addEventListener("click", function () {
@@ -2377,7 +2574,6 @@ select.sel option[disabled] { color: var(--meta); }
     if (state.activeId) newChat();
   });
 
-  /* conversation list interactions */
   function checkMark(on) {
     return on
       ? '<svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>'
@@ -2432,9 +2628,9 @@ select.sel option[disabled] { color: var(--meta); }
     menu.style.top = (r.bottom + 6) + "px";
     menu.style.left = Math.min(r.right - 196, window.innerWidth - 204) + "px";
     menu.innerHTML =
-      '<button class="menu-item" data-act="rename"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 4.8l4 4L8 20H4v-4L15.2 4.8z"/></svg>重命名</button>' +
-      '<button class="menu-item" data-act="fork"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v12"/><path d="M18 3v12"/><path d="M6 9c0 4 6 4 6 0"/><path d="M18 9c0 4-6 4-6 0"/></svg>复制对话</button>' +
-      '<button class="menu-item danger" data-act="delete"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>删除对话</button>';
+      '<button class="menu-item" data-act="rename"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 4.8l4 4L8 20H4v-4L15.2 4.8z"/></svg>' + t("conv.rename") + '</button>' +
+      '<button class="menu-item" data-act="fork"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v12"/><path d="M18 3v12"/><path d="M6 9c0 4 6 4 6 0"/><path d="M18 9c0 4-6 4-6 0"/></svg>' + t("conv.fork") + '</button>' +
+      '<button class="menu-item danger" data-act="delete"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>' + t("conv.delete") + '</button>';
     document.body.appendChild(menu);
     menu.querySelector('[data-act="rename"]').addEventListener("click", function () { renameConv(id); closeMenus(); });
     menu.querySelector('[data-act="fork"]').addEventListener("click", function () { forkConv(id); closeMenus(); });
@@ -2482,20 +2678,19 @@ select.sel option[disabled] { color: var(--meta); }
     api.post("session.fork", { sessionId: id }).then(function (res) {
       if (res.result && res.result.ok && res.result.value) {
         newChat();
-        toast("对话已复制");
+        toast(t("conv.copy.done"));
       } else {
-        toast("复制失败: " + ((res.result && res.result.error && res.result.error.message) || ""));
+        toast(t("conv.copy.fail") + ": " + ((res.result && res.result.error && res.result.error.message) || ""));
       }
-    }).catch(function (err) { toast("复制失败: " + (err.message || "")); });
+    }).catch(function (err) { toast(t("conv.copy.fail") + ": " + (err.message || "")); });
   }
 
-  /* attachment */
   $("btn-attach").addEventListener("click", function () { $("attach-file").click(); });
   $("attach-file").addEventListener("change", function () {
     if (!this.files || !this.files.length) return;
     files = Array.prototype.slice.call(this.files);
     var f = files[0];
-    $("file-chip-name").textContent = files.length > 1 ? f.name + " 等 " + files.length + " 个文件" : f.name;
+    $("file-chip-name").textContent = files.length > 1 ? f.name + " " + t("attach.files", { n: files.length }) : f.name;
     $("file-chip-size").textContent = files.length > 1 ? "" : formatSize(f.size);
     $("file-chip").classList.remove("hidden");
     this.value = "";
@@ -2510,7 +2705,6 @@ select.sel option[disabled] { color: var(--meta); }
     return (b / 1048576).toFixed(1) + " MB";
   }
 
-  /* suggestion cards */
   document.querySelectorAll(".sugg-card").forEach(function (card) {
     card.addEventListener("click", function () {
       $input.value = card.getAttribute("data-prompt") || "";
@@ -2520,22 +2714,20 @@ select.sel option[disabled] { color: var(--meta); }
     });
   });
 
-  /* panel controls */
 
-  /* export */
   $("btn-export").addEventListener("click", function () {
     var conv = findConv(state.activeId);
-    if (!conv) { toast("当前没有可导出的对话"); return; }
+    if (!conv) { toast(t("conv.export.none")); return; }
     var lines = ["# " + conv.title, ""];
     conv.msgs.forEach(function (m) {
       if (m.r === "t") {
-        lines.push("### 工具：" + (m.name || "?") + (m.isError ? " — 出错" : (m.result ? " — 已完成" : "")), "");
-        if (m.args) lines.push("**参数**", "", "```", m.args, "```", "");
-        if (m.result) lines.push("**输出**", "", m.result, "");
+        lines.push("### " + t("export.tool") + "：" + (m.name || "?") + (m.isError ? " — " + t("tool.error") : (m.result ? " — " + t("tool.ok") : "")), "");
+        if (m.args) lines.push("**" + t("tool.args") + "**", "", "```", m.args, "```", "");
+        if (m.result) lines.push("**" + t("tool.output") + "**", "", m.result, "");
         return;
       }
-      lines.push(m.r === "u" ? "## 用户" : "## DeepSeek");
-      if (m.think) lines.push("> 思考过程：\n>\n> " + m.think.replace(/\n/g, "\n> "));
+      lines.push(m.r === "u" ? "## " + t("export.user") : "## DeepSeek");
+      if (m.think) lines.push("> " + t("tool.think.process") + "：\n>\n> " + m.think.replace(/\n/g, "\n> "));
       lines.push(m.c, "");
     });
     var text = lines.join("\n");
@@ -2543,11 +2735,11 @@ select.sel option[disabled] { color: var(--meta); }
       var blob = new Blob([text], { type: "text/markdown" });
       var a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = (conv.title || "对话") + ".md";
+      a.download = (conv.title || t("conv.export.title")) + ".md";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      toast("对话已导出为 Markdown");
+      toast(t("conv.export.done"));
     } catch (e) { copyText(text); }
   });
 
@@ -2556,7 +2748,7 @@ select.sel option[disabled] { color: var(--meta); }
     var b = this;
     b.disabled = true;
     b.style.opacity = "0.6";
-    window.setTimeout(function () { b.disabled = false; b.style.opacity = "1"; toast("本地服务已重启"); }, 800);
+    window.setTimeout(function () { b.disabled = false; b.style.opacity = "1"; toast(t("toast.restart")); }, 800);
   });
 
   $("toast-close").addEventListener("click", function () { $("toast").classList.remove("show"); });
@@ -2567,6 +2759,7 @@ select.sel option[disabled] { color: var(--meta); }
   connectSSE();
   newChat();
   renderList();
+  applyI18n();
   loadAll();
   setTimeout(function () {
     fetch("/api/credentials.describe", {
@@ -2577,14 +2770,14 @@ select.sel option[disabled] { color: var(--meta); }
         var cr = res.result.value;
         var c = cr && cr.credentials && cr.credentials["DEEPSEEK_API_KEY"];
         if (c && c.configured) {
-          setStatus(c.source ? "凭据已配置（" + c.source + "）" : "凭据已配置", false);
+          setStatus(c.source ? t("cred.configured") + "（" + c.source + "）" : t("cred.configured"), false);
         } else {
-          setStatus("未检测到凭据 — 请手动输入 API Key", true);
+          setStatus(t("cred.none"), true);
         }
       } else {
-        setStatus("凭据检测失败", true);
+        setStatus(t("cred.detect.fail"), true);
       }
-    }).catch(function () { setStatus("凭据检测请求失败", true); });
+    }).catch(function () { setStatus(t("cred.detect.request.fail"), true); });
   }, 2000);
   loadWorkspaces();
 })();

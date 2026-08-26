@@ -43,11 +43,12 @@ def main() -> int:
 
     # 延迟导入 Qt: CLI-only 用法（如 --help）不需安装 PyQt6
     from PyQt6.QtWidgets import QApplication
-    from ui.betterdsh_ui import APP_QSS
+    from ui.betterdsh_ui import set_theme, app_qss
     from ui.main_window import MainWindow
 
     app = QApplication(sys.argv)
-    app.setStyleSheet(APP_QSS)
+    set_theme(settings.get("theme", "light"))
+    app.setStyleSheet(app_qss())
     window = MainWindow(root=root, repo=repo, config_path=config_path)
     window.show()
     return app.exec()

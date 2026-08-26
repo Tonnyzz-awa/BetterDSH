@@ -21,9 +21,10 @@ import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import {
   LOCALE_PREFERENCE_FIELD, LOCALE_SETTINGS_NAMESPACE, type LocaleId, type LocaleSettings,
 } from '../locale-settings.ts'
-import { en, zh, type CommonKey } from '../locales/index.ts'
+import { en, zh, ja, de, fr, wy, type CommonKey } from '../locales/index.ts'
 import {
-  en as settingsEn, zh as settingsZh, type SettingsLocaleKey,
+  en as settingsEn, zh as settingsZh, ja as settingsJa, de as settingsDe,
+  fr as settingsFr, wy as settingsWy, type SettingsLocaleKey,
 } from '../locales/settings.ts'
 import type { LanguageRowInjected } from './LanguageRow.tsx'
 import { LanguageRow } from './LanguageRow.tsx'
@@ -95,10 +96,14 @@ export const COMMON_NS = 'common'
 /** Namespace owning this feature's settings-row copy. */
 export const SETTINGS_NS = 'settings.locale'
 
-/** The two shipped locales. */
+/** Selectable locales in display order; the set tracks LOCALE_IDS. */
 const LOCALES: readonly LocaleDefinition[] = Object.freeze([
   { id: 'zh', label: '中文' },
   { id: 'en', label: 'English' },
+  { id: 'ja', label: '日本語' },
+  { id: 'de', label: 'Deutsch' },
+  { id: 'fr', label: 'Français' },
+  { id: 'wy', label: '文言' },
 ])
 
 /**
@@ -139,20 +144,17 @@ export class LocaleRuntime {
   }
 
   /**
-   * Read the current immutable locale snapshot.
-   * @returns the current snapshot (stable reference until the next change).
-   */
-  getLocale(): LocaleSnapshot {
-    return this.snapshot
-  }
-
-  /**
    * LocaleFace getSnapshot: the current snapshot (carries `revision`; stable
-   * reference between changes, uSES-safe).
+   * reference between changes, uSES-safe). The service surface reads through it.
    * @returns the current snapshot.
    */
   getSnapshot(): LocaleSnapshot {
     return this.snapshot
+  }
+
+  /** Service view of the snapshot (delegates to the LocaleFace method). */
+  getLocale(): LocaleSnapshot {
+    return this.getSnapshot()
   }
 
   /**
@@ -196,15 +198,17 @@ export class LocaleRuntime {
    * Register a declared namespace's dictionaries, all locales in one call —
    * the typed form: each dictionary is checked against the namespace's
    * {@link LocaleNamespaceMap} key union (a missing or extra key is a
-   * compile error), and every shipped locale is required (bilingual balance
-   * enforced at registration). Duplicate (ns, locale) throws (single occupant; a
-   * namespace's texts have one owner). Registration bumps the revision so
-   * mounted outlets pick up late-arriving dictionaries.
+   * compile error). Coverage may be partial: a locale absent here falls back
+   * to {@link FALLBACK_LOCALE} at lookup time, so languages can be added
+   * progressively without touching every namespace at once. Duplicate (ns,
+   * locale) throws (single occupant; a namespace's texts have one owner).
+   * Registration bumps the revision so mounted outlets pick up late-arriving
+   * dictionaries.
    * @param ns - a namespace merged into LocaleNamespaceMap.
-   * @param dicts - complete dictionaries keyed by locale id.
+   * @param dicts - dictionaries keyed by locale id (any subset of LOCALE_IDS).
    * @returns disposer removing every locale registered by this call (idempotent).
    */
-  register<N extends keyof LocaleNamespaceMap & string>(ns: N, dicts: Record<LocaleId, LocaleDictOf<N>>): () => void
+  register<N extends keyof LocaleNamespaceMap & string>(ns: N, dicts: Partial<Record<LocaleId, LocaleDictOf<N>>>): () => void
   /**
    * Single-locale untyped form for namespaces outside the merge table
    * (dynamic composition, tests).
@@ -355,8 +359,8 @@ export const inject = ['slots', 'connection', 'remote', 'settingsScope']
 export function apply(ctx: ClientContext): void {
   const host = ctx.settingsScope.bind<LocaleSettings>({ namespace: LOCALE_SETTINGS_NAMESPACE })
   const locale = new LocaleRuntime(ctx, host)
-  locale.register(COMMON_NS, { zh, en })
-  locale.register(SETTINGS_NS, { zh: settingsZh, en: settingsEn })
+  locale.register(COMMON_NS, { zh, en, ja, de, fr, wy })
+  locale.register(SETTINGS_NS, { zh: settingsZh, en: settingsEn, ja: settingsJa, de: settingsDe, fr: settingsFr, wy: settingsWy })
   ctx.provide('locale', locale)
   // The service IS the LocaleFace (bind + getSnapshot/subscribe): install it
   // so the render machinery can synthesize the `t` standard seat.

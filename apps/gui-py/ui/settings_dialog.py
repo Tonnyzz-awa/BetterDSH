@@ -139,6 +139,13 @@ class SettingsDialog(QDialog):
             self.lang_box.addItem(lang_name(lang), lang.value)
         form.addRow(f"{tr('language')} / Language", self.lang_box)
 
+        # ---- 主题 ----
+        self.theme_box = QComboBox()
+        self.theme_box.setObjectName("settingCombo")
+        self.theme_box.addItem(tr("light"), "light")
+        self.theme_box.addItem(tr("dark"), "dark")
+        form.addRow(tr("theme"), self.theme_box)
+
         outer.addLayout(form)
 
         tip = QLabel(tr("settings_tip"))
@@ -320,6 +327,10 @@ class SettingsDialog(QDialog):
         saved_lang = self._settings.get("lang", "zh")
         li = self.lang_box.findData(saved_lang)
         self.lang_box.setCurrentIndex(li if li >= 0 else 0)
+        # 主题
+        saved_theme = self._settings.get("theme", "light")
+        ti = self.theme_box.findData(saved_theme)
+        self.theme_box.setCurrentIndex(ti if ti >= 0 else 0)
         # 思考强度
         saved_re = self._settings.get("reasoning_effort", "high")
         re_idx = self.reasoning_box.findData(saved_re)
@@ -352,7 +363,7 @@ class SettingsDialog(QDialog):
             "base_url": self.base_url_edit.text().strip(),
             "custom_models": custom_models,
             "lang": sel_lang,
-            "theme": "light",
+            "theme": self.theme_box.currentData() or "light",
             "reasoning_effort": self.reasoning_box.currentData() or "high",
             "agent_preset": self.preset_box.currentData() or "",
             "workspace": self.workspace_box.currentData() or "",

@@ -84,9 +84,13 @@ function walk(node: SchemaNode | undefined, value: unknown, path: string[], secr
       return value.map((entry, index) => walk(node.inner, entry, [...path, String(index)], secrets))
     }
     default:
-      // TODO(settings-wire-redaction): Fail closed instead — a secret reachable
-      // only through a union, intersection, or transform is returned verbatim
-      // here, with nothing recording that it was missed.
+      // A secret reachable only through a non-container node cannot be stripped;
+      // fail closed rather than leak it across the wire boundary.
+      if (isRecord(value) || Array.isArray(value)) {
+        throw new Error(
+          `cannot redact secrets through a non-container schema node of type "${String(node?.type)}" at "${path.join('.') || '$'}"`,
+        )
+      }
       return value
   }
 }

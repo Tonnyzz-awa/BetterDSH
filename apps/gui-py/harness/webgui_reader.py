@@ -32,8 +32,9 @@ from typing import Any
 # 依赖可选项
 # ---------------------------------------------------------------------------
 _HAS_YAML = False
+_yaml = None
 try:
-    import yaml  # type: ignore[import-untyped]
+    import yaml as _yaml  # type: ignore[import-untyped]
     _HAS_YAML = True
 except ImportError:
     pass
@@ -227,13 +228,13 @@ class WebguiReader:
     # -- 会话历史 -----------------------------------------------------------
 
     def list_sessions(self) -> list[dict[str, Any]]:
-        """列举所有会话（只读 header，不解析事件）。
+        """列举所有会话。
 
         遍历 sessions/ 目录下每个 session.jsonl.zstd 文件，
-        读取第一行（JSON header） → 返回会话元信息列表。
+        解析 header 并扫描事件行拿到显示标题（session/title / 首条 user 消息）。
 
         返回:
-            [{id, createdAt, cwd, delegationDepth, agentPreset, projectKey, ...}, ...]
+            [{id, createdAt, cwd, delegationDepth, agentPreset, projectKey, title, ...}, ...]
         """
         if not self._sessions_root.is_dir():
             return []
@@ -259,24 +260,68 @@ class WebguiReader:
         return sessions
 
     def _read_header_line(self, zstd_path: Path, dctx: _zstd.ZstdDecompressor) -> dict[str, Any] | None:
-        """从 zstd 压缩文件中读取第一行（session header）并解析。"""
+        """读取会话 header 并解析显示标题（webgui 同款标题折叠逻辑）。
+
+        为拿到 webgui 侧写入的 session/title 事件，需要扫描全部事件行；
+        标题取最后一个 session/title 的 title（last-wins），否则用首条
+        user 来源消息的文本兜底（截断 60 字）。
+        """
         with open(zstd_path, "rb") as f:
-            # 跳过帧头读取第一行
             reader = dctx.stream_reader(f)
-            line = b""
-            while True:
-                c = reader.read(1)
-                if not c or c == b"\n":
-                    break
-                line += c
+            raw = reader.read()
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            return None
+        lines = text.splitlines()
+        if not lines:
+            return None
+        try:
+            parsed = json.loads(lines[0])
+        except json.JSONDecodeError:
+            return None
+        if not isinstance(parsed, dict) or parsed.get("type") != "session":
+            return None
+        parsed["projectKey"] = zstd_path.parent.parent.name
+        title = self._extract_title(lines)
+        if title:
+            parsed["title"] = title
+        return parsed
+
+    def _extract_title(self, lines: list[str]) -> str | None:
+        """从事件行提取显示标题：last-wins 的 session/title，否则首条 user 消息文本。"""
+        title = None
+        fallback = None
+        for line in lines[1:]:
+            line = line.strip()
             if not line:
-                return None
-            parsed = json.loads(line.decode("utf-8"))
-            if not isinstance(parsed, dict) or parsed.get("type") != "session":
-                return None
-            # 添加 project key 信息
-            parsed["projectKey"] = zstd_path.parent.parent.name
-            return parsed
+                continue
+            try:
+                ev = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(ev, dict):
+                continue
+            t = ev.get("type")
+            if t == "session/title":
+                data = ev.get("data")
+                if isinstance(data, dict) and data.get("title"):
+                    title = str(data["title"])
+            elif t == "user/message" and fallback is None:
+                data = ev.get("data")
+                if (isinstance(data, dict) and isinstance(data.get("source"), dict)
+                        and data["source"].get("kind") == "user"):
+                    parts = []
+                    for b in data.get("content") or []:
+                        if isinstance(b, dict) and b.get("type") == "text" and b.get("text"):
+                            parts.append(str(b["text"]))
+                    if parts:
+                        fallback = " ".join(parts).replace("\n", " ").strip()
+        if title:
+            return title
+        if fallback:
+            return fallback[:60] + "…" if len(fallback) > 60 else fallback
+        return None
 
     def read_session(self, session_id: str) -> dict[str, Any] | None:
         """读取指定 ID 的完整会话内容。
@@ -488,4 +533,4 @@ if __name__ == "__main__":
     print("\n--- 工作区 ---")
     pprint.pprint(reader.list_workspaces())
 
-    print("\n✓ 自测完成")
+    print("\n自测完成")

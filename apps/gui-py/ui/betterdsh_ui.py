@@ -18,10 +18,10 @@ from datetime import datetime
 
 from PyQt6.QtCore import (
     Qt, QSize, QPointF, QRectF, QTimer, QPropertyAnimation,
-    QEasingCurve, pyqtProperty, pyqtSignal,
+    QEasingCurve, pyqtProperty, pyqtSignal, QByteArray,
 )
 from PyQt6.QtGui import (
-    QColor, QPen, QBrush, QPainter, QPainterPath, QPixmap, QIcon,
+    QColor, QPen, QBrush, QPainter, QPixmap, QIcon,
     QFont, QFontMetrics, QImage,
 )
 from PyQt6.QtWidgets import (
@@ -30,26 +30,103 @@ from PyQt6.QtWidgets import (
     QGridLayout, QStackedLayout, QMenu, QSizePolicy,
     QGraphicsOpacityEffect, QGraphicsDropShadowEffect,
 )
+from PyQt6.QtSvg import QSvgRenderer
 
 from ui.locale import tr
 
-# ---- 主题颜色常量（可被 set_theme() 切换） ----
-BG          = "#ffffff"
-SURFACE     = "#f5f5f7"
-SURFACE_W   = "#fbfbfd"
-FG          = "#1d1d1f"
-FG2         = "#424245"
-MUTED       = "#6e6e73"
-META        = "#86868b"
-BORDER      = "#d2d2d7"
-BORDER_S    = "#e8e8ed"
-ACCENT      = "#0071e3"
-ACCENT_H    = "#0077ed"
-ACCENT_A    = "#0066cc"
-ACCENT_ON   = "#ffffff"
-SUCCESS     = "#16a34a"
-DANGER      = "#dc2626"
-HOVER       = "#e9e9ee"
+# ---- 主题 ----
+# 两套调色板；dark 为同族深色版。set_theme 把当前调色板写回下面的模块级常量，
+# 已有 100+ 处引用（QPainter / markdown 内联样式 / 控件样式表）随之生效，无需逐一改。
+_LIGHT = {
+    "bg": "#ffffff", "surface": "#f5f5f7", "surface_w": "#fbfbfd",
+    "fg": "#1d1d1f", "fg2": "#424245", "muted": "#6e6e73", "meta": "#86868b",
+    "border": "#d2d2d7", "border_s": "#e8e8ed", "accent": "#0071e3",
+    "accent_h": "#0077ed", "accent_a": "#0066cc", "accent_on": "#ffffff",
+    "success": "#16a34a", "danger": "#dc2626", "hover": "#e9e9ee",
+}
+_DARK = {
+    "bg": "#1d1d1f", "surface": "#2c2c2e", "surface_w": "#3a3a3c",
+    "fg": "#f5f5f7", "fg2": "#d2d2d7", "muted": "#a1a1a6", "meta": "#8e8e93",
+    "border": "#3a3a3c", "border_s": "#48484a", "accent": "#0a84ff",
+    "accent_h": "#409cff", "accent_a": "#0066cc", "accent_on": "#ffffff",
+    "success": "#30d158", "danger": "#ff453a", "hover": "#3a3a3c",
+}
+THEME = "light"
+
+
+def _apply_palette(pal: dict) -> None:
+    global BG, SURFACE, SURFACE_W, FG, FG2, MUTED, META, BORDER, BORDER_S, \
+        ACCENT, ACCENT_H, ACCENT_A, ACCENT_ON, SUCCESS, DANGER, HOVER
+    BG = pal["bg"]; SURFACE = pal["surface"]; SURFACE_W = pal["surface_w"]
+    FG = pal["fg"]; FG2 = pal["fg2"]; MUTED = pal["muted"]; META = pal["meta"]
+    BORDER = pal["border"]; BORDER_S = pal["border_s"]; ACCENT = pal["accent"]
+    ACCENT_H = pal["accent_h"]; ACCENT_A = pal["accent_a"]; ACCENT_ON = pal["accent_on"]
+    SUCCESS = pal["success"]; DANGER = pal["danger"]; HOVER = pal["hover"]
+
+
+def set_theme(name: str) -> None:
+    """切换主题（'light' / 'dark'）并刷新模块级常量与 QSS 源。"""
+    global THEME, APP_QSS
+    THEME = "dark" if name == "dark" else "light"
+    _apply_palette(_DARK if THEME == "dark" else _LIGHT)
+    APP_QSS = app_qss()
+
+
+def is_dark() -> bool:
+    return THEME == "dark"
+
+
+def app_qss() -> str:
+    """由当前调色板生成全局 QSS。控件在 __init__ 固化配色，切换主题需重建控件。"""
+    return f"""
+* {{ font-family: 'SF Pro Text', 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', sans-serif; }}
+QMainWindow, QDialog {{ background: {BG}; }}
+QWidget {{ color: {FG}; }}
+
+QScrollArea {{ background: transparent; border: none; }}
+QScrollBar:vertical {{ background: transparent; width: 10px; }}
+QScrollBar::handle:vertical {{ background: {BORDER}; border-radius: 5px; min-height: 30px; margin: 2px; }}
+QScrollBar::handle:vertical:hover {{ background: {META}; }}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{ height: 0; }}
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{ background: transparent; }}
+
+QMenu {{ background: {BG}; border: 1px solid {BORDER_S}; border-radius: 10px; padding: 6px; }}
+QMenu::item {{ padding: 8px 14px; border-radius: 7px; font-size: 13px; color: {FG}; }}
+QMenu::item:selected {{ background: {SURFACE}; }}
+QMenu::separator {{ height: 1px; background: {BORDER_S}; margin: 4px 8px; }}
+QMenu::item:disabled {{ color: {META}; }}
+
+QToolTip {{ background: {FG}; color: {BG}; border: none; padding: 6px 9px; font-size: 12px; }}
+
+QSlider {{ height: 24px; }}
+QSlider::groove:horizontal {{ height: 4px; border-radius: 2px; background: {BORDER_S}; }}
+QSlider::sub-page:horizontal {{ background: {META}; border-radius: 2px; }}
+QSlider::handle:horizontal {{ width: 18px; height: 18px; margin: -7px 0; border-radius: 9px;
+  background: {BG}; border: 1px solid {BORDER}; }}
+QSlider::handle:horizontal:hover {{ background: {SURFACE}; }}
+QSlider::handle:horizontal:focus {{ border: 2px solid {ACCENT}; }}
+
+QComboBox {{ border: 1px solid {BORDER}; border-radius: 8px; padding: 8px 12px; font-size: 13px;
+  background: {BG}; color: {FG}; }}
+QComboBox:hover {{ border-color: {META}; }}
+QComboBox:focus {{ border-color: {ACCENT}; }}
+QComboBox::drop-down {{ border: none; width: 26px; }}
+QComboBox QAbstractItemView {{ background: {BG}; border: 1px solid {BORDER_S}; outline: 0;
+  selection-background-color: {SURFACE}; selection-color: {FG}; }}
+
+QProgressBar {{ background: {BORDER_S}; border: none; border-radius: 4px; height: 8px; text-align: center; }}
+QProgressBar::chunk {{ background: {FG}; border-radius: 4px; }}
+
+QLineEdit {{ background: transparent; border: none; font-size: 13px; color: {FG}; }}
+QStatusBar {{ background: {SURFACE}; border-top: 1px solid {BORDER_S}; font-size: 12px; color: {MUTED}; }}
+QStatusBar::item {{ border: none; }}
+
+QToolButton {{ background: transparent; border: none; border-radius: 8px; padding: 6px; }}
+QToolButton:hover {{ background-color: {HOVER}; }}
+"""
+
+_apply_palette(_LIGHT)   # 默认 light
+APP_QSS = app_qss()
 
 FONT_STACK  = ["SF Pro Text", "Segoe UI", "Microsoft YaHei UI", "PingFang SC", "Helvetica Neue", "sans-serif"]
 MONO_STACK  = ["SF Mono", "Consolas", "JetBrains Mono", "Menlo", "Courier New", "monospace"]
@@ -67,7 +144,8 @@ def ui_font(px: int, weight: int = 400) -> QFont:
 
 
 def esc(s: str) -> str:
-    return html.escape(s, quote=False)
+    # 默认转义引号：inline() 在 href 里拼 URL，引号不转义会逃逸属性。
+    return html.escape(s)
 
 
 def inline(s: str) -> str:
@@ -154,6 +232,17 @@ def md_to_html(src: str) -> str:
                                         " padding:8px 12px;\">%s</td>" % inline(c) for c in r) + "</tr>"
             out.append(tbl + "</table>")
             continue
+        if t.startswith(">"):
+            quotes = []
+            while i < n and lines[i].strip().startswith(">"):
+                quotes.append(re.sub(r"^>\s?", "", lines[i]))
+                i += 1
+            inner = md_to_html("\n".join(quotes))
+            out.append(
+                f'<blockquote style="border-left:3px solid {BORDER}; '
+                f'margin:0 0 12px; padding:4px 14px; color:{FG2};">{inner}</blockquote>'
+            )
+            continue
         para = [l]
         i += 1
         while i < n and lines[i].strip() and not _is_fence(lines[i]) \
@@ -163,249 +252,86 @@ def md_to_html(src: str) -> str:
         out.append('<p style="margin:0 0 12px; line-height:1.7;">%s</p>' % inline(" ".join(para)))
     return "".join(out)
 
-import re as _re
+def _svg_icon(inner, size=18, color=None, *, width=1.7, fill=False):
+    """按 webgui 同一套 Feather SVG 渲染图标。
 
-
-def _svg_tokens(d: str) -> list[str]:
-    """把 SVG path 切分为命令字母和数值 token。
-
-    SVG 常把字母与数字粘连（如 `5v14M5`），不能只按空格 split。
-    """
-    return _re.findall(r"[MmLlHhVvCcSsQqZzAa]|[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:[eE][-+]?\d+)?", d)
-
-
-def _parse_path(d: str) -> QPainterPath:
-    """解析 SVG path `d` 字符串为 QPainterPath（支持 M/m L/l H/h V/v C/c S/s Q/q Z/z 及 A 直线近似）。
-
-    坐标按 webgui 一致的 24×24 viewBox 解析；不缩放，靠外部 translate 到中心对齐。
-    """
-    tokens = _svg_tokens(d)
-    path = QPainterPath()
-    i = 0
-    n = len(tokens)
-    cmd = None
-    cx = cy = 0.0      # 当前点
-    scx = scy = 0.0    # 子路径起点
-    pcx = pcy = 0.0    # 上一个控制点（用于 S/s 反射）
-    prev_cmd = None
-
-    def num():
-        nonlocal i
-        v = float(tokens[i]); i += 1; return v
-
-    while i < n:
-        t = tokens[i]
-        if t in "MmLlHhVvCcSsQqZzAa":
-            cmd = t; i += 1
-        elif cmd is None:
-            break  # 无命令引导，忽略
-        # 命令处理（隐式重复：命令后的连续坐标对沿用同一命令）
-        c = cmd
-        if c == "M":
-            x, y = num(), num(); path.moveTo(x, y)
-            cx, cy = x, y; scx, scy = x, y; pcx, pcy = x, y
-            c = "L"  # M 后跟坐标对视为隐式 L
-        elif c == "m":
-            x, y = num(), num(); cx += x; cy += y
-            path.moveTo(cx, cy); scx, scy = cx, cy; pcx, pcy = cx, cy
-            c = "l"
-        elif c == "L":
-            x, y = num(), num(); path.lineTo(x, y); cx, cy = x, y; pcx, pcy = x, y
-        elif c == "l":
-            cx += num(); cy += num(); path.lineTo(cx, cy); pcx, pcy = cx, cy
-        elif c == "H":
-            x = num(); path.lineTo(x, cy); cx = x; pcx, pcy = x, cy
-        elif c == "h":
-            cx += num(); path.lineTo(cx, cy); pcx, pcy = cx, cy
-        elif c == "V":
-            y = num(); path.lineTo(cx, y); cy = y; pcx, pcy = cx, y
-        elif c == "v":
-            cy += num(); path.lineTo(cx, cy); pcx, pcy = cx, cy
-        elif c in ("C", "c"):
-            if c == "C":
-                x1, y1 = num(), num(); x2, y2 = num(), num(); x, y = num(), num()
-            else:
-                dx1, dy1 = num(), num(); dx2, dy2 = num(), num(); dx, dy = num(), num()
-                x1, y1 = cx + dx1, cy + dy1; x2, y2 = cx + dx2, cy + dy2; x, y = cx + dx, cy + dy
-            path.cubicTo(x1, y1, x2, y2, x, y)
-            pcx, pcy = x2, y2; cx, cy = x, y
-        elif c in ("S", "s"):
-            if c == "S":
-                x2, y2 = num(), num(); x, y = num(), num()
-            else:
-                dx2, dy2 = num(), num(); dx, dy = num(), num()
-                x2, y2 = cx + dx2, cy + dy2; x, y = cx + dx, cy + dy
-            if prev_cmd in ("C", "c", "S", "s"):
-                x1, y1 = 2 * cx - pcx, 2 * cy - pcy
-            else:
-                x1, y1 = cx, cy
-            path.cubicTo(x1, y1, x2, y2, x, y)
-            pcx, pcy = x2, y2; cx, cy = x, y
-        elif c in ("Q", "q"):
-            if c == "Q":
-                x1, y1 = num(), num(); x, y = num(), num()
-            else:
-                dx1, dy1 = num(), num(); dx, dy = num(), num()
-                x1, y1 = cx + dx1, cy + dy1; x, y = cx + dx, cy + dy
-            path.quadTo(x1, y1, x, y)
-            pcx, pcy = x1, y1; cx, cy = x, y
-        elif c in ("Z", "z"):
-            path.closeSubpath()
-            cx, cy = scx, scy; pcx, pcy = cx, cy
-        elif c in ("A", "a"):
-            # 椭圆弧近似为直线段（Feather 图标少用，够用即可）
-            abs(num()); abs(num()); num()
-            int(num()); int(num())
-            if c == "a":
-                dx, dy = num(), num(); x, y = cx + dx, cy + dy
-            else:
-                x, y = num(), num()
-            path.lineTo(x, y)
-            cx, cy = x, y; pcx, pcy = cx, cy
-        prev_cmd = cmd
-        # 命令已消费，下一循环读取新 token；若仍是数字则按当前命令重复
-        if i < n and tokens[i] not in "MmLlHhVvCcSsQqZzAa":
-            continue  # 回到循环顶，cmd 不变，按当前命令消费下一个坐标组
-    return path
-
-
-def _feather(d, size=18, color=None, fill=False, width=1.7, extra_d=None):
-    """按 webgui 的 Feather SVG 渲染单个图标。
-
-    统一 24×24 viewBox，用 QImage（保证 alpha 通道可靠）绘制，
-    QPixmap 在某些环境下 fill(transparent) 后 toImage 会丢失 alpha，
-    因此这里用 QImage.Format_ARGB32 + fill(0) 确保透明背景。
+    直接把原始 SVG 字符串交给 QSvgRenderer，圆弧 / 描边与 webgui 像素一致
+    （不再手写 path 解析，避免椭圆弧被近似成直线，齿轮 / 回形针不再棱角分明）。
+    inner 为 SVG 内部元素（<path/> / <circle/> 等）；颜色注入 stroke / fill。
     """
     if color is None:
         color = MUTED
+    stroke = "none" if fill else color
+    fill_attr = color if fill else "none"
+    svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" '
+        f'fill="{fill_attr}" stroke="{stroke}" stroke-width="{width}" '
+        'stroke-linecap="round" stroke-linejoin="round">' + inner + "</svg>"
+    )
     dpr = 2.0
     s = int(size * dpr)
     img = QImage(s, s, QImage.Format.Format_ARGB32)
-    img.fill(0)  # 全透明
+    img.fill(0)
+    r = QSvgRenderer()
+    r.setAspectRatioMode(Qt.AspectRatioMode.KeepAspectRatio)
+    r.load(QByteArray(svg.encode("utf-8")))
     p = QPainter(img)
     p.setRenderHint(QPainter.RenderHint.Antialiasing)
-    scale = size / 24.0
-    # viewBox (x,y) → 画布：size/2 + (x-12)*scale
-    p.translate(size / 2.0 * dpr, size / 2.0 * dpr)
-    p.scale(scale * dpr, scale * dpr)
-    p.translate(-12.0, -12.0)
-    if fill:
-        p.setBrush(QBrush(QColor(color)))
-        p.setPen(Qt.PenStyle.NoPen)
-    else:
-        p.setPen(QPen(QColor(color), width, Qt.PenStyle.SolidLine,
-                      Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
-    p.drawPath(_parse_path(d))
-    if extra_d:
-        p.drawPath(_parse_path(extra_d))
+    r.render(p, QRectF(0, 0, s, s))
     p.end()
     pm = QPixmap.fromImage(img)
     pm.setDevicePixelRatio(dpr)
     return QIcon(pm)
 
 
-@lru_cache(maxsize=None)
 def icon_plus(color=None):
-    return _feather("M12 5v14M5 12h14", color=color or FG)
+    return _svg_icon('<path d="M12 5v14M5 12h14"/>', color=color or FG)
 
 
-@lru_cache(maxsize=None)
 def icon_search(color=None):
-    return _feather("M21 21l-4.35-4.35", color=color or META,
-                    extra_d="M2 11a9 9 0 1 0 18 0 9 9 0 1 0-18 0")
+    return _svg_icon('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>',
+                     color=color or META)
 
 
-@lru_cache(maxsize=None)
 def icon_close(color=None):
-    return _feather("M6 6l12 12M18 6L6 18", color=color or META)
+    return _svg_icon('<path d="M6 6l12 12M18 6L6 18"/>', color=color or META)
 
 
-@lru_cache(maxsize=None)
 def icon_gear(color=None):
     # webgui 设置齿轮（Feather settings）
-    return _feather(
-        "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06"
-        "a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09"
-        "A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83"
-        "l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09"
-        "A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83"
-        "l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09"
-        "a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83"
-        "l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09"
-        "a1.65 1.65 0 0 0-1.51 1z", color=color or META)
-
-
-@lru_cache(maxsize=None)
-def icon_export(color=None):
-    # webgui 导出（Feather download）
-    return _feather("M12 3v12M8 11l4 4 4-4M4 20h16", color=color or META)
-
-
-@lru_cache(maxsize=None)
-def icon_sparkle(color=None):
-    # 深度思考：Feather zap 填充
-    return _feather("M13 2L3 14h9l-1 8 10-12h-9l1-8z", color=color or META, fill=True)
-
-
-@lru_cache(maxsize=None)
-def icon_attach(color=None):
-    # webgui 附件（Feather paperclip）
-    return _feather(
-        "M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48",
+    return _svg_icon(
+        '<circle cx="12" cy="12" r="3"/>'
+        '<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06'
+        'a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09'
+        'A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83'
+        'l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09'
+        'A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83'
+        'l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09'
+        'a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83'
+        'l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09'
+        'a1.65 1.65 0 0 0-1.51 1z"/>',
         color=color or META)
 
 
-@lru_cache(maxsize=None)
-def icon_copy(color=None):
-    # Feather copy
-    return _feather("M9 9h11a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10a1 1 0 0 1 1-1z",
-                    color=color or META,
-                    extra_d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1")
+def icon_export(color=None):
+    # webgui 导出（download）
+    return _svg_icon('<path d="M12 3v12M8 11l4 4 4-4M4 20h16"/>', color=color or META)
 
 
-APP_QSS = """
-* { font-family: 'SF Pro Text', 'Segoe UI', 'Microsoft YaHei UI', 'PingFang SC', sans-serif; }
-QMainWindow, QDialog { background: #ffffff; }
-QWidget { color: #1d1d1f; }
+def icon_sparkle(color=None):
+    # webgui 深度思考：双五角星
+    return _svg_icon(
+        '<path d="M12 3l1.8 4.8L19 9l-5.2 1.2L12 15l-1.8-4.8L5 9l5.2-1.2L12 3z"/>'
+        '<path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/>',
+        color=color or META)
 
-QScrollArea { background: transparent; border: none; }
-QScrollBar:vertical { background: transparent; width: 10px; }
-QScrollBar::handle:vertical { background: #d2d2d7; border-radius: 5px; min-height: 30px; margin: 2px; }
-QScrollBar::handle:vertical:hover { background: #86868b; }
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: transparent; }
 
-QMenu { background: #ffffff; border: 1px solid #e8e8ed; border-radius: 10px; padding: 6px; }
-QMenu::item { padding: 8px 14px; border-radius: 7px; font-size: 13px; color: #1d1d1f; }
-QMenu::item:selected { background: #f5f5f7; }
-QMenu::separator { height: 1px; background: #e8e8ed; margin: 4px 8px; }
-QMenu::item:disabled { color: #86868b; }
+def icon_attach(color=None):
+    # webgui 附件（paperclip）
+    return _svg_icon(
+        '<path d="M21 12.5l-8.8 8.8a5.5 5.5 0 0 1-7.78-7.78L12 6.15a3.5 3.5 0 0 1 4.95 4.95l-7.5 7.5a1.5 1.5 0 0 1-2.12-2.12l7.07-7.07"/>',
+        color=color or META)
 
-QToolTip { background: #1d1d1f; color: #ffffff; border: none; padding: 6px 9px; font-size: 12px; }
-
-QSlider { height: 24px; }
-QSlider::groove:horizontal { height: 4px; border-radius: 2px; background: #e8e8ed; }
-QSlider::sub-page:horizontal { background: #86868b; border-radius: 2px; }
-QSlider::handle:horizontal { width: 18px; height: 18px; margin: -7px 0; border-radius: 9px;
-  background: #ffffff; border: 1px solid #d2d2d7; }
-QSlider::handle:horizontal:hover { background: #f5f5f7; }
-QSlider::handle:horizontal:focus { border: 2px solid #0071e3; }
-
-QComboBox { border: 1px solid #d2d2d7; border-radius: 8px; padding: 8px 12px; font-size: 13px;
-  background: #ffffff; color: #1d1d1f; }
-QComboBox:hover { border-color: #86868b; }
-QComboBox:focus { border-color: #0071e3; }
-QComboBox::drop-down { border: none; width: 26px; }
-QComboBox QAbstractItemView { background: #ffffff; border: 1px solid #e8e8ed; outline: 0;
-  selection-background-color: #f5f5f7; selection-color: #1d1d1f; }
-
-QProgressBar { background: #e8e8ed; border: none; border-radius: 4px; height: 8px; text-align: center; }
-QProgressBar::chunk { background: #1d1d1f; border-radius: 4px; }
-
-QLineEdit { background: transparent; border: none; font-size: 13px; color: #1d1d1f; }
-QStatusBar { background: #f5f5f7; border-top: 1px solid #e8e8ed; font-size: 12px; color: #6e6e73; }
-QStatusBar::item { border: none; }
-"""
 
 class SendButton(QAbstractButton):
     def __init__(self, parent=None):
@@ -1014,7 +940,7 @@ class ConvItem(QFrame):
         menu = QMenu(self)
         rn = menu.addAction(tr("session_rename"))
         dl = menu.addAction(tr("session_delete"))
-        act = menu.exec(ev.globalPos())
+        act = menu.exec(ev.globalPosition().toPoint())
         if act == rn:
             self.renameRequested.emit(self._id)
         elif act == dl:
@@ -1271,6 +1197,8 @@ class MessagesArea(QScrollArea):
         self.setWidgetResizable(True)
         self.setFrameShape(QFrame.Shape.NoFrame)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setStyleSheet(f"QScrollArea {{ background: {BG}; border: none; }}")
+        self.viewport().setStyleSheet(f"background: {BG}; border: none;")
         self._host = QWidget(self)
         self._stack = QStackedLayout(self._host)
         self._host.setLayout(self._stack)

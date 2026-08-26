@@ -22,3 +22,43 @@ export const en = {
   'openDocument.error': 'Could not open configuration file',
   'general.nav': 'General',
 } satisfies Record<SettingsKey, string>
+
+/** Japanese dictionary. */
+export const ja = {
+  'trigger': '設定',
+  'title': '設定',
+  'close': '閉じる',
+  'openDocument': '設定ファイルを開く',
+  'openDocument.error': '設定ファイルを開けませんでした',
+  'general.nav': '一般設定',
+} satisfies Record<SettingsKey, string>
+
+/** German dictionary. */
+export const de = {
+  'trigger': 'Einstellungen',
+  'title': 'Einstellungen',
+  'close': 'Schließen',
+  'openDocument': 'Konfigurationsdatei öffnen',
+  'openDocument.error': 'Konfigurationsdatei konnte nicht geöffnet werden',
+  'general.nav': 'Allgemein',
+} satisfies Record<SettingsKey, string>
+
+/** French dictionary. */
+export const fr = {
+  'trigger': 'Paramètres',
+  'title': 'Paramètres',
+  'close': 'Fermer',
+  'openDocument': 'Ouvrir le fichier de configuration',
+  'openDocument.error': 'Impossible d’ouvrir le fichier de configuration',
+  'general.nav': 'Général',
+} satisfies Record<SettingsKey, string>
+
+/** Literary Chinese (文言) dictionary. */
+export const wy = {
+  'trigger': '設',
+  'title': '設',
+  'close': '閉',
+  'openDocument': '開配置文件',
+  'openDocument.error': '無法開配置文件',
+  'general.nav': '常設',
+} satisfies Record<SettingsKey, string>

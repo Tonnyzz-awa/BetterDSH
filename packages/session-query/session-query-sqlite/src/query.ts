@@ -161,20 +161,22 @@ export function buildSessionWhere(filters: readonly SessionResultFilter[]): SqlW
         break
       case 'availability': {
         const availability = [...new Set(filter.values)]
-        if (availability.length === 0) clauses.push('0')
-        else if (availability.length === 1) {
-          const value = availability[0] as SessionAvailability
-          switch (value) {
+        const predicates: string[] = []
+        for (const value of availability) {
+          switch (value as SessionAvailability) {
             case 'live':
-              clauses.push('live = 1')
+              predicates.push('live = 1')
               break
             case 'persisted':
-              clauses.push('persisted = 1')
+              predicates.push('persisted = 1')
               break
             default:
               unknownAvailability(value)
           }
         }
+        if (predicates.length === 0) clauses.push('0')
+        else if (predicates.length === 1) clauses.push(predicates[0])
+        else clauses.push(`(${predicates.join(' OR ')})`)
         break
       }
       default:

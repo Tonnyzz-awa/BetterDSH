@@ -85,9 +85,10 @@ gui-py/
     catalog.py    从已装 pi-ai 目录动态读取模型列表（不写死）
     settings.py   data/settings.json 读写
   ui/
-    theme.py      QSS 极简主题（想换配色只改这一处）
-    widgets.py    气泡（助手 Markdown 渲染）/ 工具行 / 输入框
-    main_window.py 主窗口 + 运行时桥接
+    betterdsh_ui.py  视觉组件库：颜色 / 字体 / QSS / 矢量图标 / Markdown 渲染 / 各类控件 + 主题调色板
+    main_window.py   主窗口 + 运行时桥接 + 主题切换（浅色 / 深色）
+    settings_dialog.py 设置（供应商 / 模型 / 主题 / 语言 …）
+    locale.py         多语言文案 tr()
   run_gui.py      入口
   requirements.txt
   data/           运行期数据（会话、设置、生成配置；不进 git）

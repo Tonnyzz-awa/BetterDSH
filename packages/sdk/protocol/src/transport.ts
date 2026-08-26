@@ -241,7 +241,11 @@ export class JsonRpcLineTransport implements JsonRpcTransportPeer {
     const pending = this.pending.get(id)
     if (!pending) return
     this.pending.delete(id)
-    if (frame.error && typeof frame.error === 'object') {
+    if (frame.error !== undefined && frame.error !== null) {
+      if (typeof frame.error !== 'object' || Array.isArray(frame.error)) {
+        pending.reject(new JsonRpcResponseError(undefined, 'malformed JSON-RPC error frame', frame.error))
+        return
+      }
       const error = frame.error as Record<string, unknown>
       pending.reject(new JsonRpcResponseError(
         typeof error.code === 'number' ? error.code : undefined,

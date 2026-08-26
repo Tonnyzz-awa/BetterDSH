@@ -82,7 +82,7 @@ export function toPiReplayState(message: AssistantMessage): ReplayEnvelope {
   }
   return {
     response,
-    blocks: message.content.map((block): PiAiReplayBlock => {
+    blocks: message.content.map((block, index): PiAiReplayBlock => {
       switch (block.type) {
         case 'text': return {
           type: 'text',
@@ -97,6 +97,8 @@ export function toPiReplayState(message: AssistantMessage): ReplayEnvelope {
           type: 'tool-call',
           ...block.thoughtSignature === undefined ? {} : { thoughtSignature: block.thoughtSignature },
         }
+        default:
+          return invalidReplay(`block ${index} has an unsupported type "${block.type}"`)
       }
     }),
   }

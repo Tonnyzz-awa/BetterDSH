@@ -155,7 +155,7 @@ export class HttpFetchProvider implements WebFetchProvider {
   private async readCapped(response: Response, signal: AbortSignal): Promise<{ bytes: Uint8Array; truncatedByBytes: boolean }> {
     const declared = response.headers.get('content-length')
     if (declared !== null) {
-      const length = Number(declared)
+      const length = Number(declared.split(',')[0]?.trim())
       if (Number.isFinite(length) && length > this.limits.maxResponseBytes) {
         await response.body?.cancel()
         throw new WebError(`response exceeds the maximum of ${this.limits.maxResponseBytes} bytes`, 'WEB_FETCH_TOO_LARGE')

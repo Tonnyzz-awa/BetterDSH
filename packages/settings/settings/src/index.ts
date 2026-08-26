@@ -272,12 +272,17 @@ function cloneJsonShaped(
     if (isPlainObject(value)) {
       if (visiting.has(value)) throw reject('a circular reference', path)
       visiting.add(value)
-      // TODO(settings-json-properties): Use property-safe construction here and
-      // in mergeLayers so valid JSON keys such as "__proto__" remain own data.
       const out: Record<string, unknown> = {}
       for (const [key, entry] of Object.entries(value)) {
         if (entry === undefined) continue
-        out[key] = clone(entry, `${path}.${key}`)
+        // Define rather than assign so a JSON key spelled "__proto__" becomes an
+        // own property instead of overwriting `out`'s prototype.
+        Object.defineProperty(out, key, {
+          value: clone(entry, `${path}.${key}`),
+          enumerable: true,
+          configurable: true,
+          writable: true,
+        })
       }
       visiting.delete(value)
       return out
@@ -299,7 +304,14 @@ function mergeLayers(under: unknown, over: unknown): unknown {
   if (!isPlainObject(under) || !isPlainObject(over)) return over
   const merged: Record<string, unknown> = { ...under }
   for (const [key, value] of Object.entries(over)) {
-    merged[key] = key in merged ? mergeLayers(merged[key], value) : value
+    // Define rather than assign so a JSON key spelled "__proto__" becomes an own
+    // property instead of overwriting `merged`'s prototype.
+    Object.defineProperty(merged, key, {
+      value: key in merged ? mergeLayers(merged[key], value) : value,
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    })
   }
   return merged
 }
@@ -635,10 +647,8 @@ export abstract class SettingsProvider extends Service {
       // The write reached storage either way; the cache must say so. Commit
       // only when this registration is still the namespace owner — a fiber
       // disposed (or replaced) mid-persist must not receive the notification.
-      this.document[ns] = section
-      // TODO(settings-replacement-resync): Re-resolve any replacement registration
-      // from this persisted section so an old in-flight write cannot leave it stale.
       if (this.registrations.get(ns) === registration && !this.isStopped()) {
+        this.document[ns] = section
         this.bumpRevision(registration, current, section)
         this.commit(registration, next, 'update')
       }

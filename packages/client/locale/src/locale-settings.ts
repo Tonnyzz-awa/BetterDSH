@@ -8,8 +8,8 @@ export const LOCALE_SETTINGS_NAMESPACE = 'locale'
 /** Field carrying an explicit locale selection; absence delegates to the browser. */
 export const LOCALE_PREFERENCE_FIELD = 'preference'
 
-/** Locale identifiers shipped by the browser client. */
-export const LOCALE_IDS = ['zh', 'en'] as const
+/** Locale identifiers shipped by the browser client (parity with pygui's six). */
+export const LOCALE_IDS = ['zh', 'en', 'ja', 'de', 'fr', 'wy'] as const
 
 /** Shipped locale identifier. */
 export type LocaleId = typeof LOCALE_IDS[number]
